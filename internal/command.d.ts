@@ -36,7 +36,7 @@ export declare class ArgumentMatcher {
      * @param _value the value to match against
      * @returns
      */
-    matches(_value: string): ArgumentResult<any>;
+    matches(_value: string, _context: CommandContext): ArgumentResult<any>;
     /**
      * DO NOT USE, INTERNAL METHOD
      * @param name

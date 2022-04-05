@@ -52,7 +52,7 @@ export class ArgumentMatcher {
    * @param _value the value to match against
    * @returns
    */
-  matches(_value: string): ArgumentResult<any> {
+  matches(_value: string, _context: CommandContext): ArgumentResult<any> {
     return {
       success: false,
       error: "NOT IMPLEMENTED",
@@ -340,7 +340,7 @@ class ArgumentBuilder<
         };
       }
     }
-    let result = this.matcher.matches(command.trim());
+    let result = this.matcher.matches(command.trim(), ctx);
     if (result.success === true) {
       let results = [];
       for (const action of this.actions) {
