@@ -155,7 +155,7 @@ export declare const commandRoot: ArgumentBuilder<(ctx: CommandContext) => void>
 export declare const helpMessages: Map<string, string>;
 export declare function registerCommand(command: ArgumentBuilder, help: string, alias?: string[]): void;
 export declare function literal(value: string): ArgumentBuilder;
-interface CommandContext {
+export interface CommandContext {
     event: ChatEvent;
     sender: Player;
     dimension: Dimension;

@@ -380,7 +380,7 @@ export function registerCommand(
 export function literal(value: string): ArgumentBuilder {
   return new ArgumentBuilder(new LiteralArgumentMatcher(value));
 }
-interface CommandContext {
+export interface CommandContext {
   event: ChatEvent;
   sender: Player;
   dimension: Dimension;
