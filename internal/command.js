@@ -261,7 +261,7 @@ class ArgumentBuilder {
         if (result.success === true) {
             let results = [];
             for (const action of this.actions) {
-                const result2 = action.evaluate(ctx, command.trim().substring(result.raw.length), result.push ? [...args, result.value] : [...args]);
+                const result2 = action.evaluate(ctx, command.trim().substring(result.raw.length), result.push === false ? [...args] : [...args, result.value]);
                 if (result2.success)
                     return result2;
                 results.push(result2);
