@@ -3,7 +3,7 @@ import { BlockLocation, world, } from "mojang-minecraft";
  * @class ArgumentMatcher
  * @description Template class for checking if a string matches a certain pattern.
  */
-class ArgumentMatcher {
+export class ArgumentMatcher {
     /**
      *
      * @param _value the value to match against
@@ -59,7 +59,7 @@ class LiteralArgumentMatcher extends ArgumentMatcher {
             };
     }
 }
-class StringArgumentMatcher extends ArgumentMatcher {
+export class StringArgumentMatcher extends ArgumentMatcher {
     constructor() {
         super();
     }
@@ -72,7 +72,7 @@ class StringArgumentMatcher extends ArgumentMatcher {
         };
     }
 }
-class NumberArgumentMatcher extends ArgumentMatcher {
+export class NumberArgumentMatcher extends ArgumentMatcher {
     constructor() {
         super();
     }

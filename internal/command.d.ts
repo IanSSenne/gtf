@@ -29,7 +29,7 @@ declare type CommandResult = {
  * @class ArgumentMatcher
  * @description Template class for checking if a string matches a certain pattern.
  */
-declare class ArgumentMatcher {
+export declare class ArgumentMatcher {
     name: string;
     /**
      *
@@ -44,6 +44,14 @@ declare class ArgumentMatcher {
      * @private
      */
     setName(name: string): this;
+}
+export declare class StringArgumentMatcher extends ArgumentMatcher {
+    constructor();
+    matches(value: string): ArgumentResult<string>;
+}
+export declare class NumberArgumentMatcher extends ArgumentMatcher {
+    constructor();
+    matches(value: string): ArgumentResult<number>;
 }
 declare class ArgumentBuilder<HandlerFn extends Function = (ctx: CommandContext) => void> {
     readonly matcher: ArgumentMatcher;
