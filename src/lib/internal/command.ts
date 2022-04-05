@@ -12,7 +12,7 @@ type AppendArgument<Base, Next> = Base extends (
 ) => infer R
   ? (ctx: X, ...args: [...E, Next]) => R
   : never;
-type ArgumentResult<T> =
+export type ArgumentResult<T> =
   | {
       success: true;
       value: T;
@@ -30,7 +30,7 @@ type GuessTypeBasedOnArgumentResultType<T extends ArgumentResult<any>> =
       ? discard
       : U
     : discard;
-type CommandResult =
+export type CommandResult =
   | {
       success: true;
       executionSuccess: boolean;

@@ -1,7 +1,7 @@
 import { ChatEvent, Dimension, Player } from "mojang-minecraft";
 declare type discard = never;
 declare type AppendArgument<Base, Next> = Base extends (ctx: infer X, ...args: infer E) => infer R ? (ctx: X, ...args: [...E, Next]) => R : never;
-declare type ArgumentResult<T> = {
+export declare type ArgumentResult<T> = {
     success: true;
     value: T;
     raw: string;
@@ -16,7 +16,7 @@ declare type GuessTypeBasedOnArgumentResultType<T extends ArgumentResult<any>> =
 } ? U extends {
     success: false;
 } ? discard : U : discard;
-declare type CommandResult = {
+export declare type CommandResult = {
     success: true;
     executionSuccess: boolean;
     executionError?: any;
