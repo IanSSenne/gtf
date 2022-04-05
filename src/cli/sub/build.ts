@@ -13,5 +13,6 @@ export default async function execute(opts: CommandOptions["build"]) {
     format: "esm",
     sourcemap: "external",
     external: ["mojang-minecraft", "mojang-gametest", "mojang-minecraft-ui"],
+    treeShaking: true,
   });
 }

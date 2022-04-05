@@ -12200,7 +12200,8 @@ async function execute2(opts) {
     minify: true,
     format: "esm",
     sourcemap: "external",
-    external: ["mojang-minecraft", "mojang-gametest", "mojang-minecraft-ui"]
+    external: ["mojang-minecraft", "mojang-gametest", "mojang-minecraft-ui"],
+    treeShaking: true
   });
 }
 
