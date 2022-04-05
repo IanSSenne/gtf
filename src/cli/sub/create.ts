@@ -14,12 +14,15 @@ function error(message: string) {
 }
 type OFs = Record<string, OFs | File>;
 async function SyncFs(base: string, ofs: OFs) {
+  console.log(base, ofs);
+  if (base.length > 256) throw new Error("Invalid Path");
   if (ofs instanceof File) {
     await writeFile(base, ofs.contents);
   } else {
-    for (const [name, contents] of Object.entries(base)) {
+    for (const name in ofs) {
+      const contents = ofs[name];
       const path = resolve(base, name);
-      await mkdir(path, { recursive: true });
+      if (!(contents instanceof File)) await mkdir(path, { recursive: true });
       await SyncFs(path, contents);
     }
   }
@@ -63,7 +66,7 @@ export default async function execute(opts: CommandOptions["create"]) {
             format_version: 2,
             header: {
               description: `made with gtf`,
-              name,
+              name: answers.name,
               uuid: pack_uuid,
               version: [0, 0, 1],
               min_engine_version: [1, 14, 0],
@@ -123,6 +126,8 @@ export const help = "Ping Pong";
   };
   await SyncFs(process.cwd(), fs);
   const cwd = resolve(process.cwd(), answers.name);
-  execSync("npm add @types/mojang-minecraft --dev", { cwd: cwd });
-  execSync("npm add IanSSenne/gtf --dev");
+  execSync("npm install IanSSenne/gtf @types/mojang-minecraft --dev", {
+    cwd: cwd,
+    stdio: "pipe",
+  });
 }
