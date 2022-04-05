@@ -347,7 +347,7 @@ class ArgumentBuilder<
         const result2 = action.evaluate(
           ctx,
           command.trim().substring(result.raw.length),
-          result.push ? [...args, result.value] : [...args]
+          result.push === false ? [...args] : [...args, result.value]
         );
         if (result2.success) return result2;
         results.push(result2);
