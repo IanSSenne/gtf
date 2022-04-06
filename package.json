@@ -13,7 +13,7 @@
     "gtf": "bin/gtf.js"
   },
   "scripts": {
-    "build:lib": "tsc",
+    "build:lib": "tsc && node build-lib",
     "build:cli": "node build-tool"
   },
   "license": "MIT",

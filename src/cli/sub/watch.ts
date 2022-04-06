@@ -4,6 +4,7 @@ import { CommandOptions } from "../CommandOptions";
 import chokidar from "chokidar";
 import esbuild from "esbuild";
 import chalk from "chalk";
+import { getSharedBuildOptions } from "../getSharedBuildOptions";
 export default async function execute(opts: CommandOptions["watch"]) {
   const project_directory = path.resolve(process.cwd(), "src");
   const watcher = chokidar.watch(project_directory);
@@ -29,6 +30,7 @@ export default async function execute(opts: CommandOptions["watch"]) {
           "mojang-gametest",
           "mojang-minecraft-ui",
         ],
+        ...getSharedBuildOptions(),
       })
       .then((result) => {
         if (result.errors.length) {

@@ -2,6 +2,7 @@ import path from "path";
 import { CommandOptions } from "../CommandOptions";
 import esbuild from "esbuild";
 import { buildBarrelFile } from "../buildBarrelFile";
+import { getSharedBuildOptions } from "../getSharedBuildOptions";
 export default async function execute(opts: CommandOptions["build"]) {
   console.log({ opts });
   const entrypoint = buildBarrelFile();
@@ -14,5 +15,6 @@ export default async function execute(opts: CommandOptions["build"]) {
     sourcemap: "external",
     external: ["mojang-minecraft", "mojang-gametest", "mojang-minecraft-ui"],
     treeShaking: true,
+    ...getSharedBuildOptions(),
   });
 }

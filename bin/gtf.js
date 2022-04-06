@@ -573,7 +573,7 @@ var require_command = __commonJS({
           writeErr: (str) => process3.stderr.write(str),
           getOutHelpWidth: () => process3.stdout.isTTY ? process3.stdout.columns : void 0,
           getErrHelpWidth: () => process3.stderr.isTTY ? process3.stderr.columns : void 0,
-          outputError: (str, write) => write(str)
+          outputError: (str, write2) => write2(str)
         };
         this._hidden = false;
         this._hasHelpOption = true;
@@ -1530,13 +1530,13 @@ Expecting one of '${allowedValues.join("', '")}'`);
       _getHelpContext(contextOptions) {
         contextOptions = contextOptions || {};
         const context = { error: !!contextOptions.error };
-        let write;
+        let write2;
         if (context.error) {
-          write = (arg) => this._outputConfiguration.writeErr(arg);
+          write2 = (arg) => this._outputConfiguration.writeErr(arg);
         } else {
-          write = (arg) => this._outputConfiguration.writeOut(arg);
+          write2 = (arg) => this._outputConfiguration.writeOut(arg);
         }
-        context.write = contextOptions.write || write;
+        context.write = contextOptions.write || write2;
         context.command = this;
         return context;
       }
@@ -2207,7 +2207,7 @@ var require_prompt = __commonJS({
 var require_text = __commonJS({
   "node_modules/prompts/dist/elements/text.js"(exports, module2) {
     "use strict";
-    function asyncGeneratorStep(gen, resolve2, reject, _next, _throw, key, arg) {
+    function asyncGeneratorStep(gen, resolve3, reject, _next, _throw, key, arg) {
       try {
         var info = gen[key](arg);
         var value = info.value;
@@ -2216,7 +2216,7 @@ var require_text = __commonJS({
         return;
       }
       if (info.done) {
-        resolve2(value);
+        resolve3(value);
       } else {
         Promise.resolve(value).then(_next, _throw);
       }
@@ -2224,13 +2224,13 @@ var require_text = __commonJS({
     function _asyncToGenerator(fn) {
       return function() {
         var self = this, args = arguments;
-        return new Promise(function(resolve2, reject) {
+        return new Promise(function(resolve3, reject) {
           var gen = fn.apply(self, args);
           function _next(value) {
-            asyncGeneratorStep(gen, resolve2, reject, _next, _throw, "next", value);
+            asyncGeneratorStep(gen, resolve3, reject, _next, _throw, "next", value);
           }
           function _throw(err) {
-            asyncGeneratorStep(gen, resolve2, reject, _next, _throw, "throw", err);
+            asyncGeneratorStep(gen, resolve3, reject, _next, _throw, "throw", err);
           }
           _next(void 0);
         });
@@ -2967,7 +2967,7 @@ var require_dateparts = __commonJS({
 var require_date = __commonJS({
   "node_modules/prompts/dist/elements/date.js"(exports, module2) {
     "use strict";
-    function asyncGeneratorStep(gen, resolve2, reject, _next, _throw, key, arg) {
+    function asyncGeneratorStep(gen, resolve3, reject, _next, _throw, key, arg) {
       try {
         var info = gen[key](arg);
         var value = info.value;
@@ -2976,7 +2976,7 @@ var require_date = __commonJS({
         return;
       }
       if (info.done) {
-        resolve2(value);
+        resolve3(value);
       } else {
         Promise.resolve(value).then(_next, _throw);
       }
@@ -2984,13 +2984,13 @@ var require_date = __commonJS({
     function _asyncToGenerator(fn) {
       return function() {
         var self = this, args = arguments;
-        return new Promise(function(resolve2, reject) {
+        return new Promise(function(resolve3, reject) {
           var gen = fn.apply(self, args);
           function _next(value) {
-            asyncGeneratorStep(gen, resolve2, reject, _next, _throw, "next", value);
+            asyncGeneratorStep(gen, resolve3, reject, _next, _throw, "next", value);
           }
           function _throw(err) {
-            asyncGeneratorStep(gen, resolve2, reject, _next, _throw, "throw", err);
+            asyncGeneratorStep(gen, resolve3, reject, _next, _throw, "throw", err);
           }
           _next(void 0);
         });
@@ -3193,7 +3193,7 @@ ${i ? ` ` : figures.pointerSmall} ${color.red().italic(l)}`, ``);
 var require_number = __commonJS({
   "node_modules/prompts/dist/elements/number.js"(exports, module2) {
     "use strict";
-    function asyncGeneratorStep(gen, resolve2, reject, _next, _throw, key, arg) {
+    function asyncGeneratorStep(gen, resolve3, reject, _next, _throw, key, arg) {
       try {
         var info = gen[key](arg);
         var value = info.value;
@@ -3202,7 +3202,7 @@ var require_number = __commonJS({
         return;
       }
       if (info.done) {
-        resolve2(value);
+        resolve3(value);
       } else {
         Promise.resolve(value).then(_next, _throw);
       }
@@ -3210,13 +3210,13 @@ var require_number = __commonJS({
     function _asyncToGenerator(fn) {
       return function() {
         var self = this, args = arguments;
-        return new Promise(function(resolve2, reject) {
+        return new Promise(function(resolve3, reject) {
           var gen = fn.apply(self, args);
           function _next(value) {
-            asyncGeneratorStep(gen, resolve2, reject, _next, _throw, "next", value);
+            asyncGeneratorStep(gen, resolve3, reject, _next, _throw, "next", value);
           }
           function _throw(err) {
-            asyncGeneratorStep(gen, resolve2, reject, _next, _throw, "throw", err);
+            asyncGeneratorStep(gen, resolve3, reject, _next, _throw, "throw", err);
           }
           _next(void 0);
         });
@@ -3651,7 +3651,7 @@ Instructions:
 var require_autocomplete = __commonJS({
   "node_modules/prompts/dist/elements/autocomplete.js"(exports, module2) {
     "use strict";
-    function asyncGeneratorStep(gen, resolve2, reject, _next, _throw, key, arg) {
+    function asyncGeneratorStep(gen, resolve3, reject, _next, _throw, key, arg) {
       try {
         var info = gen[key](arg);
         var value = info.value;
@@ -3660,7 +3660,7 @@ var require_autocomplete = __commonJS({
         return;
       }
       if (info.done) {
-        resolve2(value);
+        resolve3(value);
       } else {
         Promise.resolve(value).then(_next, _throw);
       }
@@ -3668,13 +3668,13 @@ var require_autocomplete = __commonJS({
     function _asyncToGenerator(fn) {
       return function() {
         var self = this, args = arguments;
-        return new Promise(function(resolve2, reject) {
+        return new Promise(function(resolve3, reject) {
           var gen = fn.apply(self, args);
           function _next(value) {
-            asyncGeneratorStep(gen, resolve2, reject, _next, _throw, "next", value);
+            asyncGeneratorStep(gen, resolve3, reject, _next, _throw, "next", value);
           }
           function _throw(err) {
-            asyncGeneratorStep(gen, resolve2, reject, _next, _throw, "throw", err);
+            asyncGeneratorStep(gen, resolve3, reject, _next, _throw, "throw", err);
           }
           _next(void 0);
         });
@@ -4204,9 +4204,9 @@ var require_prompts = __commonJS({
     $.date = (args) => toPrompt("DatePrompt", args);
     $.confirm = (args) => toPrompt("ConfirmPrompt", args);
     $.list = (args) => {
-      const sep = args.separator || ",";
+      const sep2 = args.separator || ",";
       return toPrompt("TextPrompt", args, {
-        onSubmit: (str) => str.split(sep).map((s) => s.trim())
+        onSubmit: (str) => str.split(sep2).map((s) => s.trim())
       });
     };
     $.toggle = (args) => toPrompt("TogglePrompt", args);
@@ -4337,7 +4337,7 @@ var require_dist = __commonJS({
         arr2[i] = arr[i];
       return arr2;
     }
-    function asyncGeneratorStep(gen, resolve2, reject, _next, _throw, key, arg) {
+    function asyncGeneratorStep(gen, resolve3, reject, _next, _throw, key, arg) {
       try {
         var info = gen[key](arg);
         var value = info.value;
@@ -4346,7 +4346,7 @@ var require_dist = __commonJS({
         return;
       }
       if (info.done) {
-        resolve2(value);
+        resolve3(value);
       } else {
         Promise.resolve(value).then(_next, _throw);
       }
@@ -4354,13 +4354,13 @@ var require_dist = __commonJS({
     function _asyncToGenerator(fn) {
       return function() {
         var self = this, args = arguments;
-        return new Promise(function(resolve2, reject) {
+        return new Promise(function(resolve3, reject) {
           var gen = fn.apply(self, args);
           function _next(value) {
-            asyncGeneratorStep(gen, resolve2, reject, _next, _throw, "next", value);
+            asyncGeneratorStep(gen, resolve3, reject, _next, _throw, "next", value);
           }
           function _throw(err) {
-            asyncGeneratorStep(gen, resolve2, reject, _next, _throw, "throw", err);
+            asyncGeneratorStep(gen, resolve3, reject, _next, _throw, "throw", err);
           }
           _next(void 0);
         });
@@ -6574,9 +6574,9 @@ var require_prompts2 = __commonJS({
     $.date = (args) => toPrompt("DatePrompt", args);
     $.confirm = (args) => toPrompt("ConfirmPrompt", args);
     $.list = (args) => {
-      const sep = args.separator || ",";
+      const sep2 = args.separator || ",";
       return toPrompt("TextPrompt", args, {
-        onSubmit: (str) => str.split(sep).map((s) => s.trim())
+        onSubmit: (str) => str.split(sep2).map((s) => s.trim())
       });
     };
     $.toggle = (args) => toPrompt("TogglePrompt", args);
@@ -8379,9 +8379,9 @@ var require_readdirp = __commonJS({
       return new ReaddirpStream(options);
     };
     var readdirpPromise = (root, options = {}) => {
-      return new Promise((resolve2, reject) => {
+      return new Promise((resolve3, reject) => {
         const files = [];
-        readdirp(root, options).on("data", (entry) => files.push(entry)).on("end", () => resolve2(files)).on("error", (error2) => reject(error2));
+        readdirp(root, options).on("data", (entry) => files.push(entry)).on("end", () => resolve3(files)).on("error", (error2) => reject(error2));
       });
     };
     readdirp.promise = readdirpPromise;
@@ -9999,7 +9999,7 @@ var require_is_binary_path = __commonJS({
 var require_constants3 = __commonJS({
   "node_modules/chokidar/lib/constants.js"(exports) {
     "use strict";
-    var { sep } = require("path");
+    var { sep: sep2 } = require("path");
     var { platform } = process;
     var os2 = require("os");
     exports.EV_ALL = "all";
@@ -10027,7 +10027,7 @@ var require_constants3 = __commonJS({
     exports.KEY_ERR = "errHandlers";
     exports.KEY_RAW = "rawEmitters";
     exports.HANDLER_KEYS = [exports.KEY_LISTENERS, exports.KEY_ERR, exports.KEY_RAW];
-    exports.DOT_SLASH = `.${sep}`;
+    exports.DOT_SLASH = `.${sep2}`;
     exports.BACK_SLASH_RE = /\\/g;
     exports.DOUBLE_SLASH_RE = /\/\//;
     exports.SLASH_OR_BACK_SLASH_RE = /[/\\]/;
@@ -10390,13 +10390,13 @@ var require_nodefs_handler = __commonJS({
             this._addToNodeFs(path4, initialAdd, wh, depth + 1);
           }
         }).on(EV_ERROR, this._boundHandleError);
-        return new Promise((resolve2) => stream.once(STR_END, () => {
+        return new Promise((resolve3) => stream.once(STR_END, () => {
           if (this.fsw.closed) {
             stream = void 0;
             return;
           }
           const wasThrottled = throttler ? throttler.clear() : false;
-          resolve2();
+          resolve3();
           previous.getChildren().filter((item) => {
             return item !== directory && !current.has(item) && (!wh.hasGlob || wh.filterPath({
               fullPath: sysPath.resolve(directory, item)
@@ -12166,7 +12166,7 @@ export const help = "Ping Pong";
 }
 
 // src/cli/sub/build.ts
-var import_path3 = __toESM(require("path"));
+var import_path4 = __toESM(require("path"));
 var import_esbuild = __toESM(require("esbuild"));
 
 // src/cli/buildBarrelFile.ts
@@ -12176,8 +12176,8 @@ function buildBarrelFile() {
   const baseDirectory = import_path2.default.resolve(process.cwd(), "src", "commands");
   let barrel = `import {registerCommand} from "gtf/command";
 `;
-  (0, import_fs.readdirSync)(baseDirectory).filter((file2) => file2.endsWith(".ts")).forEach((file2, i) => {
-    barrel += `import * as command$${i} from ${JSON.stringify(import_path2.default.resolve(process.cwd(), "src", "commands", file2).replace(/\.tsx?$/, ""))};
+  (0, import_fs.readdirSync)(baseDirectory).filter((file2) => file2.endsWith(".ts") || file2.endsWith(".js") || file2.endsWith(".tsx") || file2.endsWith(".jsx")).forEach((file2, i) => {
+    barrel += `import * as command$${i} from ${JSON.stringify(import_path2.default.resolve(process.cwd(), "src", "commands", file2).replace(/\.[tj]sx?$/, ""))};
 	  if(command$${i}.condition??true){
 		registerCommand(command$${i}.definition,command$${i}.help,command$${i}.alias);
 	  }`;
@@ -12189,41 +12189,56 @@ function buildBarrelFile() {
   return file;
 }
 
+// src/cli/getSharedBuildOptions.ts
+var import_fs2 = require("fs");
+var import_path3 = require("path");
+var modPath = (0, import_path3.resolve)(process.cwd(), "scripts", "modules");
+if (!(0, import_fs2.existsSync)(modPath)) {
+  (0, import_fs2.mkdirSync)(modPath, { recursive: true });
+}
+var lastPatchedModules = new Set((0, import_fs2.readdirSync)(modPath).map((f) => f.replace(/\.js$/, "")));
+function getSharedBuildOptions() {
+  return {
+    plugins: []
+  };
+}
+
 // src/cli/sub/build.ts
 async function execute2(opts) {
   console.log({ opts });
   const entrypoint = buildBarrelFile();
   import_esbuild.default.build({
     entryPoints: [entrypoint],
-    outfile: import_path3.default.resolve(process.cwd(), "scripts", "pack.js"),
+    outfile: import_path4.default.resolve(process.cwd(), "scripts", "pack.js"),
     bundle: true,
     minify: true,
     format: "esm",
     sourcemap: "external",
     external: ["mojang-minecraft", "mojang-gametest", "mojang-minecraft-ui"],
-    treeShaking: true
+    treeShaking: true,
+    ...getSharedBuildOptions()
   });
 }
 
 // src/cli/sub/watch.ts
-var import_path4 = __toESM(require("path"));
+var import_path5 = __toESM(require("path"));
 var import_chokidar = __toESM(require_chokidar());
 var import_esbuild2 = __toESM(require("esbuild"));
 async function execute3(opts) {
-  const project_directory = import_path4.default.resolve(process.cwd(), "src");
+  const project_directory = import_path5.default.resolve(process.cwd(), "src");
   const watcher = import_chokidar.default.watch(project_directory);
   let doneInitializing = false;
   function rebuildProject(file) {
     if (!doneInitializing)
       return;
     if (file)
-      console.log(import_path4.default.relative(project_directory, file) + " changed, rebuilding!");
+      console.log(import_path5.default.relative(project_directory, file) + " changed, rebuilding!");
     else
       console.log("Building Project.");
     const entrypoint = buildBarrelFile();
     import_esbuild2.default.build({
       entryPoints: [entrypoint],
-      outfile: import_path4.default.resolve(process.cwd(), "scripts", "pack.js"),
+      outfile: import_path5.default.resolve(process.cwd(), "scripts", "pack.js"),
       bundle: true,
       minify: false,
       format: "esm",
@@ -12232,7 +12247,8 @@ async function execute3(opts) {
         "mojang-minecraft",
         "mojang-gametest",
         "mojang-minecraft-ui"
-      ]
+      ],
+      ...getSharedBuildOptions()
     }).then((result) => {
       if (result.errors.length) {
         console.log(import_esbuild2.default.formatMessagesSync(result.errors, {
