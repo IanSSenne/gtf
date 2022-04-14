@@ -121,7 +121,7 @@ export class NumberArgumentMatcher extends ArgumentMatcher {
   }
   matches(value: string): ArgumentResult<number> {
     try {
-      const match = value.match(/^(-*(?:\d(?:\.\d+)*|(?:\.\d+)))/);
+      const match = value.match(/^(-*(?:\d+(?:\.\d+)*|(?:\.\d+)))/);
       if (match) {
         const value2 = parseFloat(match[0]);
         if (Number.isNaN(value2) && Array.isArray(match)) {
@@ -418,3 +418,8 @@ world.events.beforeChat.subscribe((event) => {
     }
   }
 });
+const a = literal("t");
+let b = a.argument("number", new NumberArgumentMatcher());
+b.number("foo").executes((ctx: CommandContext, n: number, foo: number) => {});
+b.literal("bar").executes((ctx: CommandContext, n: number) => {});
+b.string("lol").executes((ctx: CommandContext, n: number, lol: string) => {});

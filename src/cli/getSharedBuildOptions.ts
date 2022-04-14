@@ -26,6 +26,20 @@ export function getSharedBuildOptions(): esbuild.BuildOptions {
   return {
     plugins: [
       //   {
+      //     name: "seperate-dependencies",
+      //     setup(build) {
+      //       build.onResolve(
+      //         {
+      //           filter: /^[^\.]/,
+      //         },
+      //         async (args: esbuild.OnResolveArgs) => {
+      //           console.log(args);
+      //           return args;
+      //         }
+      //       );
+      //     },
+      //   },
+      //   {
       //     name: "dedupe imports",
       //     setup(build) {
       //       console.log("setup");

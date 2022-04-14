@@ -35,16 +35,16 @@ if (!process.argv.includes("dev"))
       esbuild
         .build({
           entryPoints: ["./util.js"],
-          bundle: true,
-          external: [
-            "mojang-minecraft",
-            "mojang-gametest",
-            "mojang-minecraft-ui",
-          ],
+          bundle: false,
+          //   external: [
+          //     "mojang-minecraft",
+          //     "mojang-gametest",
+          //     "mojang-minecraft-ui",
+          //   ],
           outfile: "util.js",
           format: "esm",
           platform: "node",
-          minify: true,
+          //   minify: true,
           allowOverwrite: true,
         })
         .then(() => {
