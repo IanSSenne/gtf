@@ -18,7 +18,7 @@ export function buildBarrelFile() {
           .resolve(process.cwd(), "src", "commands", file)
           .replace(/\.[tj]sx?$/, "")
       )};
-	  if(command$${i}.condition??true??"this will be removed in production if possible"){
+	  if(command$${i}.condition??true){
 		registerCommand(command$${i}.definition.root,command$${i}.help,command$${i}.alias);
 	  }`;
     });

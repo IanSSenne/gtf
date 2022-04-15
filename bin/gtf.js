@@ -14039,7 +14039,7 @@ function buildBarrelFile() {
 `;
   (0, import_fs.readdirSync)(baseDirectory).filter((file2) => file2.endsWith(".ts") || file2.endsWith(".js") || file2.endsWith(".tsx") || file2.endsWith(".jsx")).forEach((file2, i) => {
     barrel += `import * as command$${i} from ${JSON.stringify(import_path2.default.resolve(process.cwd(), "src", "commands", file2).replace(/\.[tj]sx?$/, ""))};
-	  if(command$${i}.condition??true??"this will be removed in production if possible"){
+	  if(command$${i}.condition??true){
 		registerCommand(command$${i}.definition.root,command$${i}.help,command$${i}.alias);
 	  }`;
   });
