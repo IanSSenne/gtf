@@ -358,7 +358,12 @@ class ArgumentBuilder<
         results.push(result2);
       }
       const min = Math.min(...results.map((r) => r.depth || Infinity));
-      return results.find((r) => r.depth === min) as CommandResult;
+      return (
+        (results.find((r) => r.depth === min) as CommandResult) || {
+          success: false,
+          error: "No results found",
+        }
+      );
     } else {
       return {
         success: false,
