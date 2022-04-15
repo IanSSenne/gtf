@@ -19,7 +19,8 @@
   "license": "MIT",
   "dependencies": {
     "esbuild": "^0.14.28",
-    "terser": "^5.12.1"
+    "terser": "^5.12.1",
+    "zlib": "^1.0.5"
   },
   "devDependencies": {
     "@types/mojang-minecraft": "^0.1.4",

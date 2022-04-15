@@ -127,7 +127,7 @@ export const help = "Ping Pong";
 `)}}}};await Xp(process.cwd(),o);let u=(0,Zl.resolve)(process.cwd(),e.name);(0,Wp.execSync)("npm install IanSSenne/gtf @types/mojang-minecraft --dev",{cwd:u,stdio:"pipe"})}var og=hi(require("path")),ag=hi(require("esbuild"));var ir=require("fs"),Ar=hi(require("path"));function wa(){let t=Ar.default.resolve(process.cwd(),"src","commands"),e=`import {registerCommand} from "gtf/command";
 import {registerEvents} from "gtf/util";
 `;(0,ir.readdirSync)(t).filter(r=>r.endsWith(".ts")||r.endsWith(".js")||r.endsWith(".tsx")||r.endsWith(".jsx")).forEach((r,s)=>{e+=`import * as command$${s} from ${JSON.stringify(Ar.default.resolve(process.cwd(),"src","commands",r).replace(/\.[tj]sx?$/,""))};
-if(command$${s}.condition??true){
+if(command$${s}.condition||true){
 	registerCommand(command$${s}.definition.root,command$${s}.help,command$${s}.alias);
 	if(command$${s}.events)registerEvents(command$${s}.events);
 }
