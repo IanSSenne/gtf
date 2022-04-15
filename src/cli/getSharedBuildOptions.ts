@@ -1,16 +1,9 @@
 import esbuild from "esbuild";
-import {
-  existsSync,
-  fstat,
-  mkdirSync,
-  readdirSync,
-  unlinkSync,
-  write,
-  writeFileSync,
-} from "fs";
+import { minify } from "terser";
 import * as cp from "child_process";
 import { resolve, sep } from "path";
 import { performance } from "perf_hooks";
+import { readFileSync, writeFileSync } from "fs";
 const patchedModules = [
   "mojang-minecraft",
   "mojang-minecraft-ui",
@@ -78,7 +71,7 @@ function build2(path: string, p: () => Promise<any>) {
 function seperateDependencyPlugin(production: boolean) {
   return {
     name: "seperate-dependencies",
-    setup(build) {
+    setup(build: esbuild.PluginBuild) {
       build.onResolve(
         {
           filter: /^@*[a-z]/,
@@ -92,6 +85,13 @@ function seperateDependencyPlugin(production: boolean) {
           );
         }
       );
+      build.onEnd(async () => {
+        if (production) {
+          const content = readFileSync(build.initialOptions.outfile, "utf8");
+          const minified = await minify(content);
+          writeFileSync(build.initialOptions.outfile, minified.code);
+        }
+      });
     },
   };
 }
