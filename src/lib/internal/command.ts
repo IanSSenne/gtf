@@ -424,6 +424,9 @@ world.events.beforeChat.subscribe((event) => {
     );
     event.cancel = true;
     if (result.success === false) {
+      event.sender.runCommand(
+        `§4tellraw @s {"rawtext":[{"text":"Command Error: ${result.error}"}]}`
+      );
       console.warn(result.error);
     }
   }
