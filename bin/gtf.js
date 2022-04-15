@@ -573,7 +573,7 @@ var require_command = __commonJS({
           writeErr: (str) => process3.stderr.write(str),
           getOutHelpWidth: () => process3.stdout.isTTY ? process3.stdout.columns : void 0,
           getErrHelpWidth: () => process3.stderr.isTTY ? process3.stderr.columns : void 0,
-          outputError: (str, write2) => write2(str)
+          outputError: (str, write) => write(str)
         };
         this._hidden = false;
         this._hasHelpOption = true;
@@ -1530,13 +1530,13 @@ Expecting one of '${allowedValues.join("', '")}'`);
       _getHelpContext(contextOptions) {
         contextOptions = contextOptions || {};
         const context = { error: !!contextOptions.error };
-        let write2;
+        let write;
         if (context.error) {
-          write2 = (arg) => this._outputConfiguration.writeErr(arg);
+          write = (arg) => this._outputConfiguration.writeErr(arg);
         } else {
-          write2 = (arg) => this._outputConfiguration.writeOut(arg);
+          write = (arg) => this._outputConfiguration.writeOut(arg);
         }
-        context.write = contextOptions.write || write2;
+        context.write = contextOptions.write || write;
         context.command = this;
         return context;
       }
@@ -12191,20 +12191,14 @@ function buildBarrelFile() {
 
 // src/cli/getSharedBuildOptions.ts
 var import_esbuild = __toESM(require("esbuild"));
-var import_fs2 = require("fs");
 var cp = __toESM(require("child_process"));
 var import_path3 = require("path");
 var import_perf_hooks = require("perf_hooks");
-var modPath = (0, import_path3.resolve)(process.cwd(), "scripts", "modules");
-if (!(0, import_fs2.existsSync)(modPath)) {
-  (0, import_fs2.mkdirSync)(modPath, { recursive: true });
-}
 var patchedModules = [
   "mojang-minecraft",
   "mojang-minecraft-ui",
   "mojang-gametest"
 ];
-var lastPatchedModules = new Set((0, import_fs2.readdirSync)(modPath).map((f) => f.replace(/\.js$/, "")));
 var builtDependencies = /* @__PURE__ */ new Map();
 async function buildDependency(meta, minify) {
   if (patchedModules.includes(meta.path)) {

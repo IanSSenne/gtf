@@ -11,19 +11,11 @@ import {
 import * as cp from "child_process";
 import { resolve, sep } from "path";
 import { performance } from "perf_hooks";
-const modPath = resolve(process.cwd(), "scripts", "modules");
-if (!existsSync(modPath)) {
-  mkdirSync(modPath, { recursive: true });
-}
 const patchedModules = [
   "mojang-minecraft",
   "mojang-minecraft-ui",
   "mojang-gametest",
 ];
-const written = new Set();
-let lastPatchedModules = new Set(
-  readdirSync(modPath).map((f) => f.replace(/\.js$/, ""))
-);
 const builtDependencies = new Map();
 async function buildDependency(
   meta: esbuild.OnResolveArgs,
