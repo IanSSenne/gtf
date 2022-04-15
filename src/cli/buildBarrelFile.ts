@@ -3,7 +3,7 @@ import path from "path";
 
 export function buildBarrelFile() {
   const baseDirectory = path.resolve(process.cwd(), "src", "commands");
-  let barrel = `import {registerCommand} from "gtf/command";\n`;
+  let barrel = `import {registerCommand} from "gtf/command";\nimport {registerEvents} from "gtf/util";\n`;
   readdirSync(baseDirectory)
     .filter(
       (file) =>
@@ -20,6 +20,8 @@ export function buildBarrelFile() {
       )};
 	  if(command$${i}.condition??true){
 		registerCommand(command$${i}.definition.root,command$${i}.help,command$${i}.alias);
+		if(command$${i}.events)
+			registerEvents(command$${i}.events);
 	  }`;
     });
   if (
