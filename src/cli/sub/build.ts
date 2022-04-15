@@ -4,7 +4,6 @@ import esbuild from "esbuild";
 import { buildBarrelFile } from "../buildBarrelFile";
 import { getSharedBuildOptions } from "../getSharedBuildOptions";
 export default async function execute(opts: CommandOptions["build"]) {
-  console.log({ opts });
   const entrypoint = buildBarrelFile();
   esbuild.build({
     entryPoints: [entrypoint],

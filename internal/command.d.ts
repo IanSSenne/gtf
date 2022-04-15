@@ -58,9 +58,11 @@ declare class ArgumentBuilder<HandlerFn extends Function = (ctx: CommandContext)
     actions: ArgumentBuilder[];
     depth: number;
     executable?: HandlerFn;
+    parent: ArgumentBuilder;
     constructor(matcher?: ArgumentMatcher);
     private bind;
     private setDepth;
+    get root(): ArgumentBuilder<any>;
     /**
      *
      * @param target

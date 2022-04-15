@@ -12167,7 +12167,7 @@ export const help = "Ping Pong";
 
 // src/cli/sub/build.ts
 var import_path4 = __toESM(require("path"));
-var import_esbuild = __toESM(require("esbuild"));
+var import_esbuild2 = __toESM(require("esbuild"));
 
 // src/cli/buildBarrelFile.ts
 var import_fs = require("fs");
@@ -12179,7 +12179,7 @@ function buildBarrelFile() {
   (0, import_fs.readdirSync)(baseDirectory).filter((file2) => file2.endsWith(".ts") || file2.endsWith(".js") || file2.endsWith(".tsx") || file2.endsWith(".jsx")).forEach((file2, i) => {
     barrel += `import * as command$${i} from ${JSON.stringify(import_path2.default.resolve(process.cwd(), "src", "commands", file2).replace(/\.[tj]sx?$/, ""))};
 	  if(command$${i}.condition??true){
-		registerCommand(command$${i}.definition,command$${i}.help,command$${i}.alias);
+		registerCommand(command$${i}.definition.root,command$${i}.help,command$${i}.alias);
 	  }`;
   });
   const dir = import_path2.default.resolve(process.cwd(), ".gtf_cache", "barrel");
@@ -12190,24 +12190,83 @@ function buildBarrelFile() {
 }
 
 // src/cli/getSharedBuildOptions.ts
+var import_esbuild = __toESM(require("esbuild"));
 var import_fs2 = require("fs");
+var cp = __toESM(require("child_process"));
 var import_path3 = require("path");
 var modPath = (0, import_path3.resolve)(process.cwd(), "scripts", "modules");
 if (!(0, import_fs2.existsSync)(modPath)) {
   (0, import_fs2.mkdirSync)(modPath, { recursive: true });
 }
+var patchedModules = [
+  "mojang-minecraft",
+  "mojang-minecraft-ui",
+  "mojang-gametest"
+];
 var lastPatchedModules = new Set((0, import_fs2.readdirSync)(modPath).map((f) => f.replace(/\.js$/, "")));
+var builtDependencies = /* @__PURE__ */ new Map();
+async function buildDependency(meta) {
+  if (patchedModules.includes(meta.path)) {
+    return {
+      path: meta.path,
+      external: true
+    };
+  }
+  let resolvedPath = null;
+  try {
+    resolvedPath = cp.execSync(`node --print "try{require('${meta.path}')}catch(e){};require.resolve('${meta.path}')"`, {
+      cwd: process.cwd()
+    }).toString("utf-8").trim();
+    console.log(resolvedPath.toString());
+  } catch (e) {
+    console.log(e);
+    process.exit();
+  }
+  await import_esbuild.default.build({
+    entryPoints: [resolvedPath],
+    bundle: true,
+    minify: true,
+    format: "esm",
+    sourcemap: "external",
+    outfile: (0, import_path3.resolve)(process.cwd(), "scripts", "modules", meta.path + ".js"),
+    external: ["mojang-minecraft", "mojang-gametest", "mojang-minecraft-ui"],
+    plugins: [seperateDependencyPlugin()]
+  }).then((result) => {
+    console.log("built dependency", meta.path);
+  });
+  return {
+    path: "./modules/" + meta.path + ".js",
+    external: true
+  };
+}
+function seperateDependencyPlugin() {
+  return {
+    name: "seperate-dependencies",
+    setup(build) {
+      build.onResolve({
+        filter: /^@*[a-z]/
+      }, async (args) => {
+        console.log(args);
+        if (builtDependencies.has(args.path)) {
+          return builtDependencies.get(args.path);
+        }
+        return await buildDependency(args);
+      });
+    }
+  };
+}
 function getSharedBuildOptions() {
   return {
-    plugins: []
+    plugins: [
+      seperateDependencyPlugin()
+    ]
   };
 }
 
 // src/cli/sub/build.ts
 async function execute2(opts) {
-  console.log({ opts });
   const entrypoint = buildBarrelFile();
-  import_esbuild.default.build({
+  import_esbuild2.default.build({
     entryPoints: [entrypoint],
     outfile: import_path4.default.resolve(process.cwd(), "scripts", "pack.js"),
     bundle: true,
@@ -12223,7 +12282,7 @@ async function execute2(opts) {
 // src/cli/sub/watch.ts
 var import_path5 = __toESM(require("path"));
 var import_chokidar = __toESM(require_chokidar());
-var import_esbuild2 = __toESM(require("esbuild"));
+var import_esbuild3 = __toESM(require("esbuild"));
 async function execute3(opts) {
   const project_directory = import_path5.default.resolve(process.cwd(), "src");
   const watcher = import_chokidar.default.watch(project_directory);
@@ -12236,7 +12295,7 @@ async function execute3(opts) {
     else
       console.log("Building Project.");
     const entrypoint = buildBarrelFile();
-    import_esbuild2.default.build({
+    import_esbuild3.default.build({
       entryPoints: [entrypoint],
       outfile: import_path5.default.resolve(process.cwd(), "scripts", "pack.js"),
       bundle: true,
@@ -12251,11 +12310,11 @@ async function execute3(opts) {
       ...getSharedBuildOptions()
     }).then((result) => {
       if (result.errors.length) {
-        console.log(import_esbuild2.default.formatMessagesSync(result.errors, {
+        console.log(import_esbuild3.default.formatMessagesSync(result.errors, {
           kind: "error"
         }).join("\n"));
       } else if (result.warnings.length) {
-        console.log(import_esbuild2.default.formatMessagesSync(result.warnings, {
+        console.log(import_esbuild3.default.formatMessagesSync(result.warnings, {
           kind: "warning"
         }).join("\n"));
       } else {

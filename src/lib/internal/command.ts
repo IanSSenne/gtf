@@ -161,6 +161,7 @@ class ArgumentBuilder<
   actions: ArgumentBuilder[];
   depth = 0;
   executable?: HandlerFn;
+  parent: ArgumentBuilder;
   constructor(
     public readonly matcher: ArgumentMatcher = new RootArgumentMatcher()
   ) {
@@ -168,12 +169,16 @@ class ArgumentBuilder<
   }
   private bind<T extends ArgumentBuilder<any>>(ab: T): T {
     this.actions.push(ab);
-    ab.setDepth(this.depth + 1);
+    ab.setDepth(this.depth + 1, this);
     return ab;
   }
-  private setDepth(depth: number) {
+  private setDepth(depth: number, parent: ArgumentBuilder<any> = this): void {
+    this.parent = parent;
     this.depth = depth;
     this.actions.forEach((a) => a.setDepth(depth + 1));
+  }
+  get root(): ArgumentBuilder<any> {
+    return this.parent.root || this;
   }
 
   /**

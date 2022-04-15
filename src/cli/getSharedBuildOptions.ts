@@ -8,6 +8,7 @@ import {
   write,
   writeFileSync,
 } from "fs";
+import * as cp from "child_process";
 import { resolve, sep } from "path";
 const modPath = resolve(process.cwd(), "scripts", "modules");
 if (!existsSync(modPath)) {
@@ -22,23 +23,74 @@ const written = new Set();
 let lastPatchedModules = new Set(
   readdirSync(modPath).map((f) => f.replace(/\.js$/, ""))
 );
+const builtDependencies = new Map();
+async function buildDependency(
+  meta: esbuild.OnResolveArgs
+): Promise<esbuild.OnResolveResult> {
+  if (patchedModules.includes(meta.path)) {
+    return {
+      path: meta.path,
+      external: true,
+    };
+  }
+  let resolvedPath = null;
+  try {
+    resolvedPath = cp
+      .execSync(
+        `node --print "try{require('${meta.path}')}catch(e){};require.resolve('${meta.path}')"`,
+        {
+          cwd: process.cwd(),
+        }
+      )
+      .toString("utf-8")
+      .trim();
+    console.log(resolvedPath.toString());
+  } catch (e) {
+    console.log(e);
+    process.exit();
+  }
+  await esbuild
+    .build({
+      entryPoints: [resolvedPath],
+      bundle: true,
+      minify: true,
+      format: "esm",
+      sourcemap: "external",
+      outfile: resolve(process.cwd(), "scripts", "modules", meta.path + ".js"),
+      external: ["mojang-minecraft", "mojang-gametest", "mojang-minecraft-ui"],
+      plugins: [seperateDependencyPlugin()],
+    })
+    .then((result) => {
+      console.log("built dependency", meta.path);
+    });
+  return {
+    path: "./modules/" + meta.path + ".js",
+    external: true,
+  };
+}
+function seperateDependencyPlugin() {
+  return {
+    name: "seperate-dependencies",
+    setup(build) {
+      build.onResolve(
+        {
+          filter: /^@*[a-z]/,
+        },
+        async (args: esbuild.OnResolveArgs) => {
+          console.log(args);
+          if (builtDependencies.has(args.path)) {
+            return builtDependencies.get(args.path);
+          }
+          return await buildDependency(args);
+        }
+      );
+    },
+  };
+}
 export function getSharedBuildOptions(): esbuild.BuildOptions {
   return {
     plugins: [
-      //   {
-      //     name: "seperate-dependencies",
-      //     setup(build) {
-      //       build.onResolve(
-      //         {
-      //           filter: /^[^\.]/,
-      //         },
-      //         async (args: esbuild.OnResolveArgs) => {
-      //           console.log(args);
-      //           return args;
-      //         }
-      //       );
-      //     },
-      //   },
+      seperateDependencyPlugin(),
       //   {
       //     name: "dedupe imports",
       //     setup(build) {
