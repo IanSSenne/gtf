@@ -4,7 +4,4 @@ export declare class EntityDataStore<X extends object> {
     raw: string;
     data: Partial<X>;
     constructor(entity: Entity);
-    get(): Promise<Partial<X>>;
-    update(data: Partial<X>): Promise<void>;
-    delete(key: string): Promise<void>;
 }

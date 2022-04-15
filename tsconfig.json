@@ -5,6 +5,7 @@
     "outDir": "./",
     "declaration": true,
     "target": "ES2021",
-    "module": "es6"
+    "module": "es6",
+    "moduleResolution": "node"
   }
 }
