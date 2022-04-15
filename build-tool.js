@@ -2,6 +2,7 @@ const esbuild = require("esbuild");
 esbuild.build({
   entryPoints: ["./src/cli/main.ts"],
   bundle: true,
+  minify: true,
   external: ["esbuild"],
   outfile: "bin/gtf.js",
   format: "cjs",

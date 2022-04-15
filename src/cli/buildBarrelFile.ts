@@ -1,4 +1,4 @@
-import { mkdirSync, readdirSync, writeFileSync } from "fs";
+import { existsSync, mkdirSync, readdirSync, writeFileSync } from "fs";
 import path from "path";
 
 export function buildBarrelFile() {
@@ -22,6 +22,20 @@ export function buildBarrelFile() {
 		registerCommand(command$${i}.definition.root,command$${i}.help,command$${i}.alias);
 	  }`;
     });
+  if (
+    existsSync(path.resolve(process.cwd(), "src", "main.ts")) ||
+    existsSync(path.resolve(process.cwd(), "src", "main.js"))
+  ) {
+    barrel += `import ${JSON.stringify(
+      path.resolve(
+        process.cwd(),
+        "src",
+        existsSync(path.resolve(process.cwd(), "src", "main.ts"))
+          ? "main.ts"
+          : "main.js"
+      )
+    )};`;
+  }
   const dir = path.resolve(process.cwd(), ".gtf_cache", "barrel");
   mkdirSync(dir, { recursive: true });
   const file = path.resolve(dir, "commands.ts");
