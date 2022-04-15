@@ -20,10 +20,6 @@ const patchedModules = [
   "mojang-minecraft-ui",
   "mojang-gametest",
 ];
-const written = new Set();
-let lastPatchedModules = new Set(
-  readdirSync(modPath).map((f) => f.replace(/\.js$/, ""))
-);
 const builtDependencies = new Map();
 async function buildDependency(
   meta: esbuild.OnResolveArgs,
@@ -36,6 +32,7 @@ async function buildDependency(
     };
   }
   let resolvedPath = null;
+  const start = performance.now();
   try {
     resolvedPath = cp
       .execSync(
@@ -50,7 +47,6 @@ async function buildDependency(
     console.log(e);
     process.exit();
   }
-  const start = performance.now();
   await esbuild
     .build({
       entryPoints: [resolvedPath],

@@ -12206,7 +12206,7 @@ var patchedModules = [
 ];
 var lastPatchedModules = new Set((0, import_fs2.readdirSync)(modPath).map((f) => f.replace(/\.js$/, "")));
 var builtDependencies = /* @__PURE__ */ new Map();
-async function buildDependency(meta, minify) {
+async function buildDependency(meta) {
   if (patchedModules.includes(meta.path)) {
     return {
       path: meta.path,
@@ -12218,55 +12218,48 @@ async function buildDependency(meta, minify) {
     resolvedPath = cp.execSync(`node --print "try{require('${meta.path}')}catch(e){};require.resolve('${meta.path}')"`, {
       cwd: process.cwd()
     }).toString("utf-8").trim();
+    console.log(resolvedPath.toString());
   } catch (e) {
     console.log(e);
     process.exit();
   }
-  const start = import_perf_hooks.performance.now();
   await import_esbuild.default.build({
     entryPoints: [resolvedPath],
     bundle: true,
-    minify,
+    minify: true,
     format: "esm",
     sourcemap: "external",
     outfile: (0, import_path3.resolve)(process.cwd(), "scripts", "modules", meta.path + ".js"),
     external: ["mojang-minecraft", "mojang-gametest", "mojang-minecraft-ui"],
-    plugins: [seperateDependencyPlugin(minify)]
+    plugins: [seperateDependencyPlugin()]
   }).then((result) => {
-    console.log("built dependency", meta.path, "in", (import_perf_hooks.performance.now() - start).toFixed(1) + "ms");
+    console.log("built dependency", meta.path);
   });
   return {
     path: "./modules/" + meta.path + ".js",
     external: true
   };
 }
-var _buildCache = {};
-function build2(path4, p) {
-  if (_buildCache[path4]) {
-    return _buildCache[path4];
-  }
-  _buildCache[path4] = p();
-  return _buildCache[path4];
-}
-function seperateDependencyPlugin(production) {
+function seperateDependencyPlugin() {
   return {
     name: "seperate-dependencies",
     setup(build) {
       build.onResolve({
         filter: /^@*[a-z]/
       }, async (args) => {
+        console.log(args);
         if (builtDependencies.has(args.path)) {
           return builtDependencies.get(args.path);
         }
-        return await build2(args.path, () => buildDependency(args, production));
+        return await buildDependency(args);
       });
     }
   };
 }
-function getSharedBuildOptions(production) {
+function getSharedBuildOptions() {
   return {
     plugins: [
-      seperateDependencyPlugin(production)
+      seperateDependencyPlugin()
     ]
   };
 }
