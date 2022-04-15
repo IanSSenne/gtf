@@ -140,7 +140,7 @@ declare class ArgumentBuilder<HandlerFn extends Function = (ctx: CommandContext)
      * @param handler
      * @returns
      **/
-    executes(callback: HandlerFn): this;
+    executes(callback: HandlerFn): ArgumentBuilder<HandlerFn>;
     /**
      * @example
      * ```

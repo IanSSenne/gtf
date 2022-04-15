@@ -12214,6 +12214,7 @@ async function buildDependency(meta, minify) {
     };
   }
   let resolvedPath = null;
+  const start = import_perf_hooks.performance.now();
   try {
     resolvedPath = cp.execSync(`node --print "try{require('${meta.path}')}catch(e){};require.resolve('${meta.path}')"`, {
       cwd: process.cwd()
@@ -12222,7 +12223,6 @@ async function buildDependency(meta, minify) {
     console.log(e);
     process.exit();
   }
-  const start = import_perf_hooks.performance.now();
   await import_esbuild.default.build({
     entryPoints: [resolvedPath],
     bundle: true,

@@ -36,6 +36,7 @@ async function buildDependency(
     };
   }
   let resolvedPath = null;
+  const start = performance.now();
   try {
     resolvedPath = cp
       .execSync(
@@ -50,7 +51,6 @@ async function buildDependency(
     console.log(e);
     process.exit();
   }
-  const start = performance.now();
   await esbuild
     .build({
       entryPoints: [resolvedPath],
