@@ -8,7 +8,9 @@ import {
   write,
   writeFileSync,
 } from "fs";
+import * as cp from "child_process";
 import { resolve, sep } from "path";
+import { performance } from "perf_hooks";
 const modPath = resolve(process.cwd(), "scripts", "modules");
 if (!existsSync(modPath)) {
   mkdirSync(modPath, { recursive: true });
@@ -22,23 +24,91 @@ const written = new Set();
 let lastPatchedModules = new Set(
   readdirSync(modPath).map((f) => f.replace(/\.js$/, ""))
 );
-export function getSharedBuildOptions(): esbuild.BuildOptions {
+const builtDependencies = new Map();
+async function buildDependency(
+  meta: esbuild.OnResolveArgs,
+  minify: boolean
+): Promise<esbuild.OnResolveResult> {
+  if (patchedModules.includes(meta.path)) {
+    return {
+      path: meta.path,
+      external: true,
+    };
+  }
+  let resolvedPath = null;
+  try {
+    resolvedPath = cp
+      .execSync(
+        `node --print "try{require('${meta.path}')}catch(e){};require.resolve('${meta.path}')"`,
+        {
+          cwd: process.cwd(),
+        }
+      )
+      .toString("utf-8")
+      .trim();
+  } catch (e) {
+    console.log(e);
+    process.exit();
+  }
+  const start = performance.now();
+  await esbuild
+    .build({
+      entryPoints: [resolvedPath],
+      bundle: true,
+      minify,
+      format: "esm",
+      sourcemap: "external",
+      outfile: resolve(process.cwd(), "scripts", "modules", meta.path + ".js"),
+      external: ["mojang-minecraft", "mojang-gametest", "mojang-minecraft-ui"],
+      plugins: [seperateDependencyPlugin(minify)],
+    })
+    .then((result) => {
+      console.log(
+        "built dependency",
+        meta.path,
+        "in",
+        (performance.now() - start).toFixed(1) + "ms"
+      );
+    });
+  return {
+    path: "./modules/" + meta.path + ".js",
+    external: true,
+  };
+}
+let _buildCache = {};
+function build2(path: string, p: () => Promise<any>) {
+  if (_buildCache[path]) {
+    return _buildCache[path];
+  }
+  _buildCache[path] = p();
+  return _buildCache[path];
+}
+function seperateDependencyPlugin(production: boolean) {
+  return {
+    name: "seperate-dependencies",
+    setup(build) {
+      build.onResolve(
+        {
+          filter: /^@*[a-z]/,
+        },
+        async (args: esbuild.OnResolveArgs) => {
+          if (builtDependencies.has(args.path)) {
+            return builtDependencies.get(args.path);
+          }
+          return await build2(args.path, () =>
+            buildDependency(args, production)
+          );
+        }
+      );
+    },
+  };
+}
+export function getSharedBuildOptions(
+  production: boolean
+): esbuild.BuildOptions {
   return {
     plugins: [
-      //   {
-      //     name: "seperate-dependencies",
-      //     setup(build) {
-      //       build.onResolve(
-      //         {
-      //           filter: /^[^\.]/,
-      //         },
-      //         async (args: esbuild.OnResolveArgs) => {
-      //           console.log(args);
-      //           return args;
-      //         }
-      //       );
-      //     },
-      //   },
+      seperateDependencyPlugin(production),
       //   {
       //     name: "dedupe imports",
       //     setup(build) {

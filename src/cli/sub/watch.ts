@@ -30,7 +30,7 @@ export default async function execute(opts: CommandOptions["watch"]) {
           "mojang-gametest",
           "mojang-minecraft-ui",
         ],
-        ...getSharedBuildOptions(),
+        ...getSharedBuildOptions(false),
       })
       .then((result) => {
         if (result.errors.length) {

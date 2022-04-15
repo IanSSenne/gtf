@@ -18,8 +18,8 @@ export function buildBarrelFile() {
           .resolve(process.cwd(), "src", "commands", file)
           .replace(/\.[tj]sx?$/, "")
       )};
-	  if(command$${i}.condition??true){
-		registerCommand(command$${i}.definition,command$${i}.help,command$${i}.alias);
+	  if(command$${i}.condition??true??"this will be removed in production if possible"){
+		registerCommand(command$${i}.definition.root,command$${i}.help,command$${i}.alias);
 	  }`;
     });
   const dir = path.resolve(process.cwd(), ".gtf_cache", "barrel");
