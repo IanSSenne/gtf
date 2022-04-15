@@ -357,7 +357,7 @@ class ArgumentBuilder<
         if (result2.success) return result2;
         results.push(result2);
       }
-      const min = Math.min(...results.map((r) => r.depth || Infinity));
+      const min = Math.max(...results.map((r) => r.depth || -Infinity));
       return (
         (results.find((r) => r.depth === min) as CommandResult) || {
           success: false,
