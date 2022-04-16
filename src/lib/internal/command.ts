@@ -5,6 +5,7 @@ import {
   Player,
   world,
 } from "mojang-minecraft";
+import { PositionArgumentMatcher } from "./arguments/PositionArgument";
 type discard = never;
 type AppendArgument<Base, Next> = Base extends (
   ctx: infer X,
@@ -245,6 +246,24 @@ class ArgumentBuilder<
     return this.bind(
       new ArgumentBuilder<AppendArgument<HandlerFn, string>>(
         new StringArgumentMatcher().setName(name)
+      )
+    );
+  }
+
+  /**
+   * @example
+   * ```
+   * ArgumentBuilderInstance.literal("roll").string("pattern")
+   * ```
+   * this would match `roll 1d20` and provide `1d20` as the pattern
+   *
+   * @param name
+   * @returns
+   */
+  position(name: string): ArgumentBuilder<AppendArgument<HandlerFn, Location>> {
+    return this.bind(
+      new ArgumentBuilder<AppendArgument<HandlerFn, Location>>(
+        new PositionArgumentMatcher().setName(name)
       )
     );
   }

@@ -109,6 +109,17 @@ declare class ArgumentBuilder<HandlerFn extends Function = (ctx: CommandContext)
     /**
      * @example
      * ```
+     * ArgumentBuilderInstance.literal("roll").string("pattern")
+     * ```
+     * this would match `roll 1d20` and provide `1d20` as the pattern
+     *
+     * @param name
+     * @returns
+     */
+    position(name: string): ArgumentBuilder<AppendArgument<HandlerFn, Location>>;
+    /**
+     * @example
+     * ```
      * ArgumentBuilderInstance.literal("roll").selector("pattern")
      * ```
      * this would match `roll 1d20` and provide `1d20` as the pattern
