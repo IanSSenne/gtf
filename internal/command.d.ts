@@ -109,9 +109,11 @@ declare class ArgumentBuilder<HandlerFn extends Function = (ctx: CommandContext)
     /**
      * @example
      * ```
-     * ArgumentBuilderInstance.literal("roll").string("pattern")
+     * ArgumentBuilderInstance.literal("setblock").position("pattern")
      * ```
-     * this would match `roll 1d20` and provide `1d20` as the pattern
+     * this would match `roll 1 1 1` and provide `Location{x:1,y:1,z:1}` as the pattern
+     * also supports `~` for relative to the source position
+     * and `^` for local coordinates
      *
      * @param name
      * @returns
