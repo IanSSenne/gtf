@@ -22,6 +22,7 @@
     "terser": "^5.12.1"
   },
   "devDependencies": {
+    "@esbuild-plugins/node-modules-polyfill": "^0.1.4",
     "@types/mojang-minecraft": "^0.1.4",
     "@types/node": "^17.0.23",
     "@types/prompts": "^2.0.14",
