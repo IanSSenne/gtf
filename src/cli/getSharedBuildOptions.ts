@@ -4,7 +4,6 @@ import * as cp from "child_process";
 import { resolve, sep } from "path";
 import { performance } from "perf_hooks";
 import { readFileSync, writeFileSync } from "fs";
-import polyfill from "@esbuild-plugins/node-modules-polyfill";
 const patchedModules = [
   "mojang-minecraft",
   "mojang-minecraft-ui",
@@ -153,7 +152,6 @@ export function getSharedBuildOptions(
       //       });
       //     },
       //   },
-      polyfill(),
     ],
   };
 }
