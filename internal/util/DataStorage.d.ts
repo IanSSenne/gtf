@@ -1,5 +1,5 @@
 export declare const WorldStorage: {
-    get(key: string): void;
-    set(key: string): void;
-    delete(key: string): void;
+    get(key: string): any;
+    set(key: string): string;
+    delete(key: string): boolean;
 };
