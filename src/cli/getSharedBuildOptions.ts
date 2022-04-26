@@ -3,7 +3,7 @@ import { minify } from "terser";
 import * as cp from "child_process";
 import { resolve, sep } from "path";
 import { performance } from "perf_hooks";
-import { readFileSync, writeFileSync } from "fs";
+import { existsSync, readFileSync, writeFileSync } from "fs";
 const patchedModules = [
   "mojang-minecraft",
   "mojang-minecraft-ui",
@@ -95,10 +95,37 @@ function seperateDependencyPlugin(production: boolean) {
     },
   };
 }
+const GTF_PROJECT_META_PATH = resolve(process.cwd(), "gtf-project.json");
+if (!existsSync(GTF_PROJECT_META_PATH)) {
+  console.log("gtf-project.json not found, making a new one");
+  writeFileSync(
+    GTF_PROJECT_META_PATH,
+    JSON.stringify({
+      id: Math.floor(Math.random() * Number.MAX_SAFE_INTEGER),
+    })
+  );
+}
+function getProjectId() {
+  return JSON.parse(readFileSync(GTF_PROJECT_META_PATH, "utf8")).id;
+}
+function getEnvObject(production: boolean) {
+  return {
+    NODE_ENV: production ? "production" : "development",
+    GTF_PROJECT_ID: getProjectId(),
+  };
+}
 export function getSharedBuildOptions(
   production: boolean
 ): esbuild.BuildOptions {
   return {
+    define: {
+      ...Object.fromEntries(
+        Object.entries(getEnvObject(production)).map(([k, v]) => [
+          `GTF.env.${k}`,
+          JSON.stringify(v),
+        ])
+      ),
+    },
     plugins: [
       seperateDependencyPlugin(production),
       //   {

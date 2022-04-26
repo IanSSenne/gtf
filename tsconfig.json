@@ -1,5 +1,5 @@
 {
-  "include": ["./src/lib/"],
+  "include": ["./src/lib/", "./types/global.d.ts"],
   "exclude": [],
   "compilerOptions": {
     "outDir": "./",
@@ -7,5 +7,6 @@
     "target": "ES2021",
     "module": "es6",
     "moduleResolution": "node"
+    // "types": ["./types/global.d.ts"]
   }
 }
