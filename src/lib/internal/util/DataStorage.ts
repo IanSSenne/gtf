@@ -7,7 +7,7 @@ import {
   world,
 } from "mojang-minecraft";
 const RNG = new (class SeededRNG {
-  private seed: number = GTF.env.GTF_PACK_ID;
+  private seed: number = GTF.env.GTF_PROJECT_ID;
   get(max: number): number {
     this.seed = (this.seed * 0x5deece66d + 0xb) & 0xffffffff;
     return this.seed % max;
@@ -57,7 +57,7 @@ function _readData(item: ItemStack) {
 if (!indexItem) {
   _updateIndex({});
 }
-let temp = _lookupIndex(GTF.env.GTF_PACK_ID);
+let temp = _lookupIndex(GTF.env.GTF_PROJECT_ID);
 let store_location = new BlockLocation(temp.x, 0, temp.z);
 const myBlock = setChestAt(store_location);
 const myContainer = myBlock.getComponent(
