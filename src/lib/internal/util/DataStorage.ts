@@ -107,8 +107,8 @@ export const WorldStorage = new (class {
   get(key: string) {
     return data[key];
   }
-  set(key: string) {
-    let result = (data[key] = key);
+  set(key: string, value: any) {
+    let result = (data[key] = value);
     _sync();
     return result;
   }
