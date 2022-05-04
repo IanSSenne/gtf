@@ -1,1 +1,307 @@
-import{BlockLocation as x,ItemStack as _,MinecraftBlockTypes as b,MinecraftItemTypes as d,world as h}from"mojang-minecraft";var v=new class{constructor(){this.seed=GTF.env.GTF_PROJECT_ID}get(t){return this.seed=this.seed*25214903917+11&4294967295,this.seed%t}},a=new x(15728639,0,15728639),o,s=h.getDimension("overworld");function T(r){let t=s.getBlock(r);return t.id!=="minecraft:chest"&&(s.runCommand(`fill ${r.x-1} ${r.y+1} ${r.z-1} ${r.x+1} ${r.y+1} ${r.z+1} minecraft:barrier 0 replace`),t.setType(b.chest)),s.getBlock(r)}var u=s.getBlock(a);u.id!=="minecraft:chest"&&(u=T(a));o=u.getComponent("minecraft:inventory");var N=o.container.getItem(0),i=32752;function S(r){let t=Math.floor(r.length/i);if(t>i)throw new Error("Data too large");let e=[];for(let n=0;n<t;n++)e.push(r.substr(n*i,i));return e}function C(r){let t=JSON.stringify(r),e=o.container.getItem(0)||new _(d.dirt,1,0);e.setLore(S(t)),o.container.setItem(0,e)}function E(r){return JSON.parse(r.getLore().join(""))}N||C({});var w=P(GTF.env.GTF_PROJECT_ID),O=new x(w.x,0,w.z),V=T(O),p=V.getComponent("minecraft:inventory"),l=p.container.getItem(0)||new _(d.dirt,1,0);p.container.setItem(0,l);function P(r){let t=o.container.getItem(0),e;if(t){if(e=E(t),r in e)return e[r]}else t=new _(d.dirt,1,0),e={};let n;return C({...e,[r]:n={x:a.x+v.get(65535),z:a.z+v.get(65535)}}),n}var c=E(l),f=!0;function I(){if(f){f=!1;let r=h.events.tick.subscribe(()=>{f=!0;let t=Date.now();l.setLore(S(JSON.stringify(c))),p.container.setItem(0,l),h.events.tick.unsubscribe(r),console.log(`[GTF] Synced data in ${Date.now()-t}ms`)})}}var k=new class{get(r){return c[r]}set(r,t){let e=c[r]=t;return I(),e}delete(r){let t=delete c[r];return I(),t}};import{BlockRaycastOptions as B,EntityRaycastOptions as R}from"mojang-minecraft";var g=class{constructor(t){this.entity=t,this.raw=this.entity.getDynamicProperty("_")}};var D;(function(r){r[r.NONE=0]="NONE",r[r.NAME=1]="NAME"})(D||(D={}));var y=class{constructor(t){this._=t}cache(t,e){if(this.c.has(t))return this.c.get(t);let n=e();return this.c.set(t,n),n}get targetPlayer(){return this._}get bodyRotation(){return this._.bodyRotation}get dimension(){return this._.dimension}get headLocation(){return this._.headLocation}get id(){return this._.id}get isSneaking(){return this._.isSneaking}set isSneaking(t){this._.isSneaking=t}get location(){return this._.location}get name(){return this._.name}get nameTag(){return this._.nameTag}set nameTag(t){this._.nameTag=t}get onScreenDisplay(){return this._.onScreenDisplay}get selectedSlot(){return this._.selectedSlot}get inventory(){return this.getComponent("minecraft:inventory")}get selectedItem(){let t=this.inventory;try{return t?t.container.getItem(this.selectedSlot):null}catch{return null}}set selectedItem(t){let e=this.inventory;e&&e.container.setItem(this.selectedSlot,t)}set selectedSlot(t){this._.selectedSlot=t}get target(){return this._.target}set target(t){this._.target=t}get velocity(){return this._.velocity}get viewVector(){return this._.viewVector}store(){return this.cache("store",()=>new g(this._))}addEffect(t,e,n,m){this._.addEffect(t,e,n,m)}addTag(t){return this._.addTag(t)}getBlockFromViewVector(t){let e;return t&&(e=new B,Object.assign(e,t)),this._.getBlockFromViewVector(e)}getComponent(t){return this.cache("Component;"+t,()=>this.getComponent(t))}getComponents(){return this._.getComponents()}getDynamicProperty(t){return this._.getDynamicProperty(t)}getEffect(t){return this._.getEffect(t)}getEntitiesFromViewVector(t){let e;return t&&(e=new R,Object.assign(e,t)),this._.getEntitiesFromViewVector(e)}getItemCooldown(t){return this._.getItemCooldown(t)}getTags(){return this._.getTags()}hasComponent(t){return this._.hasComponent(t)}hasTag(t){return this._.hasTag(t)}kill(){this._.kill()}playSound(t,e){return this._.playSound(t,e)}removeDynamicProperty(t){return this._.removeDynamicProperty(t)}removeTag(t){return this._.removeTag(t)}runCommand(t){return this._.runCommand(t)}setDynamicProperty(t,e){this._.setDynamicProperty(t,e)}setVelocity(t){this._.setVelocity(t)}startItemCooldown(t,e){this._.startItemCooldown(t,e)}teleport(t,e,n,m){this._.teleport(t,e,n,m)}teleportFacing(t,e,n){this._.teleportFacing(t,e,n)}triggerEvent(t){this._.triggerEvent(t)}};import{world as F}from"mojang-minecraft";function G(r){for(let[t,e]of Object.entries(r))F.events[t].subscribe(e)}console.log(k);export{y as PlayerProxy,k as WorldStorage,G as registerEvents};
+// internal/util/DataStorage.js
+import { BlockLocation, ItemStack, MinecraftBlockTypes, MinecraftItemTypes, world } from "mojang-minecraft";
+var RNG = new class SeededRNG {
+  constructor() {
+    this.seed = GTF.env.GTF_PROJECT_ID;
+  }
+  get(max) {
+    this.seed = this.seed * 25214903917 + 11 & 4294967295;
+    return this.seed % max;
+  }
+}();
+var INDEX_LOCATION = new BlockLocation(15728639, 0, 15728639);
+var _index;
+var DIM = world.getDimension("overworld");
+function setChestAt(location) {
+  let block2 = DIM.getBlock(location);
+  if (block2.id !== "minecraft:chest") {
+    DIM.runCommand(`fill ${location.x - 1} ${location.y + 1} ${location.z - 1} ${location.x + 1} ${location.y + 1} ${location.z + 1} minecraft:barrier 0 replace`);
+    block2.setType(MinecraftBlockTypes.chest);
+  }
+  return DIM.getBlock(location);
+}
+var block = DIM.getBlock(INDEX_LOCATION);
+if (block.id !== "minecraft:chest")
+  block = setChestAt(INDEX_LOCATION);
+_index = block.getComponent("minecraft:inventory");
+var indexItem = _index.container.getItem(0);
+var MAX_ENTERY_SIZE = 32752;
+function _seperateData(data2) {
+  const size = Math.floor(data2.length / MAX_ENTERY_SIZE);
+  if (size > MAX_ENTERY_SIZE) {
+    throw new Error("Data too large");
+  }
+  const result = [];
+  for (let i = 0; i < size; i++) {
+    result.push(data2.substr(i * MAX_ENTERY_SIZE, MAX_ENTERY_SIZE));
+  }
+  return result;
+}
+function _updateIndex(value) {
+  const string = JSON.stringify(value);
+  let item2 = _index.container.getItem(0) || new ItemStack(MinecraftItemTypes.dirt, 1, 0);
+  item2.setLore(_seperateData(string));
+  _index.container.setItem(0, item2);
+}
+function _readData(item2) {
+  return JSON.parse(item2.getLore().join(""));
+}
+if (!indexItem) {
+  _updateIndex({});
+}
+var temp = _lookupIndex(GTF.env.GTF_PROJECT_ID);
+var store_location = new BlockLocation(temp.x, 0, temp.z);
+var myBlock = setChestAt(store_location);
+var myContainer = myBlock.getComponent("minecraft:inventory");
+var item = myContainer.container.getItem(0) || new ItemStack(MinecraftItemTypes.dirt, 1, 0);
+myContainer.container.setItem(0, item);
+function _lookupIndex(key) {
+  let item2 = _index.container.getItem(0);
+  let data2;
+  if (item2) {
+    data2 = _readData(item2);
+    if (key in data2)
+      return data2[key];
+  } else {
+    item2 = new ItemStack(MinecraftItemTypes.dirt, 1, 0);
+    data2 = {};
+  }
+  let _value;
+  _updateIndex({
+    ...data2,
+    [key]: _value = {
+      x: INDEX_LOCATION.x + RNG.get(65535),
+      z: INDEX_LOCATION.z + RNG.get(65535)
+    }
+  });
+  return _value;
+}
+var data = _readData(item);
+var F_can_sync = true;
+function _sync() {
+  if (F_can_sync) {
+    F_can_sync = false;
+    const callback = world.events.tick.subscribe(() => {
+      F_can_sync = true;
+      const start = Date.now();
+      item.setLore(_seperateData(JSON.stringify(data)));
+      myContainer.container.setItem(0, item);
+      world.events.tick.unsubscribe(callback);
+      console.log(`[GTF] Synced data in ${Date.now() - start}ms`);
+    });
+  }
+}
+var WorldStorage = new class {
+  get(key) {
+    return data[key];
+  }
+  set(key, value) {
+    let result = data[key] = value;
+    _sync();
+    return result;
+  }
+  delete(key) {
+    let result = delete data[key];
+    _sync();
+    return result;
+  }
+}();
+
+// internal/util/PlayerProxy.js
+import { BlockRaycastOptions, EntityRaycastOptions } from "mojang-minecraft";
+
+// internal/util/EntityDataStore.js
+var EntityDataStore = class {
+  constructor(entity) {
+    this.entity = entity;
+    this.raw = this.entity.getDynamicProperty("_");
+  }
+};
+
+// internal/util/PlayerProxy.js
+var FeatureFlags;
+(function(FeatureFlags2) {
+  FeatureFlags2[FeatureFlags2["NONE"] = 0] = "NONE";
+  FeatureFlags2[FeatureFlags2["NAME"] = 1] = "NAME";
+})(FeatureFlags || (FeatureFlags = {}));
+var PlayerProxy = class {
+  constructor(player) {
+    this._ = player;
+  }
+  cache(key, value) {
+    if (this.c.has(key))
+      return this.c.get(key);
+    let v = value();
+    this.c.set(key, v);
+    return v;
+  }
+  get targetPlayer() {
+    return this._;
+  }
+  get bodyRotation() {
+    return this._.bodyRotation;
+  }
+  get dimension() {
+    return this._.dimension;
+  }
+  get headLocation() {
+    return this._.headLocation;
+  }
+  get id() {
+    return this._.id;
+  }
+  get isSneaking() {
+    return this._.isSneaking;
+  }
+  set isSneaking(value) {
+    this._.isSneaking = value;
+  }
+  get location() {
+    return this._.location;
+  }
+  get name() {
+    return this._.name;
+  }
+  get nameTag() {
+    return this._.nameTag;
+  }
+  set nameTag(value) {
+    this._.nameTag = value;
+  }
+  get onScreenDisplay() {
+    return this._.onScreenDisplay;
+  }
+  get selectedSlot() {
+    return this._.selectedSlot;
+  }
+  get inventory() {
+    return this.getComponent("minecraft:inventory");
+  }
+  get selectedItem() {
+    const inventory = this.inventory;
+    try {
+      return inventory ? inventory.container.getItem(this.selectedSlot) : null;
+    } catch (e) {
+      return null;
+    }
+  }
+  set selectedItem(item2) {
+    const inventory = this.inventory;
+    if (inventory) {
+      inventory.container.setItem(this.selectedSlot, item2);
+    }
+  }
+  set selectedSlot(value) {
+    this._.selectedSlot = value;
+  }
+  get target() {
+    return this._.target;
+  }
+  set target(value) {
+    this._.target = value;
+  }
+  get velocity() {
+    return this._.velocity;
+  }
+  get viewVector() {
+    return this._.viewVector;
+  }
+  store() {
+    return this.cache("store", () => new EntityDataStore(this._));
+  }
+  addEffect(effectType, duration, amplifier, showParticles) {
+    this._.addEffect(effectType, duration, amplifier, showParticles);
+  }
+  addTag(tag) {
+    return this._.addTag(tag);
+  }
+  getBlockFromViewVector(options) {
+    let _opts;
+    if (options) {
+      _opts = new BlockRaycastOptions();
+      Object.assign(_opts, options);
+    }
+    return this._.getBlockFromViewVector(_opts);
+  }
+  getComponent(componentId) {
+    return this.cache("Component;" + componentId, () => this.getComponent(componentId));
+  }
+  getComponents() {
+    return this._.getComponents();
+  }
+  getDynamicProperty(identifier) {
+    return this._.getDynamicProperty(identifier);
+  }
+  getEffect(effectType) {
+    return this._.getEffect(effectType);
+  }
+  getEntitiesFromViewVector(options) {
+    let _opts;
+    if (options) {
+      _opts = new EntityRaycastOptions();
+      Object.assign(_opts, options);
+    }
+    return this._.getEntitiesFromViewVector(_opts);
+  }
+  getItemCooldown(itemCategory) {
+    return this._.getItemCooldown(itemCategory);
+  }
+  getTags() {
+    return this._.getTags();
+  }
+  hasComponent(componentId) {
+    return this._.hasComponent(componentId);
+  }
+  hasTag(tag) {
+    return this._.hasTag(tag);
+  }
+  kill() {
+    this._.kill();
+  }
+  playSound(soundID, soundOptions) {
+    return this._.playSound(soundID, soundOptions);
+  }
+  removeDynamicProperty(identifier) {
+    return this._.removeDynamicProperty(identifier);
+  }
+  removeTag(tag) {
+    return this._.removeTag(tag);
+  }
+  runCommand(commandString) {
+    return this._.runCommand(commandString);
+  }
+  setDynamicProperty(identifier, value) {
+    this._.setDynamicProperty(identifier, value);
+  }
+  setVelocity(velocity) {
+    this._.setVelocity(velocity);
+  }
+  startItemCooldown(itemCategory, tickDuration) {
+    this._.startItemCooldown(itemCategory, tickDuration);
+  }
+  teleport(location, dimension, xRotation, yRotation) {
+    this._.teleport(location, dimension, xRotation, yRotation);
+  }
+  teleportFacing(location, dimension, facingLocation) {
+    this._.teleportFacing(location, dimension, facingLocation);
+  }
+  triggerEvent(eventName) {
+    this._.triggerEvent(eventName);
+  }
+};
+
+// internal/util/registerEvents.js
+import { world as world2 } from "mojang-minecraft";
+function registerEvents(events) {
+  for (const [key, value] of Object.entries(events)) {
+    world2.events[key].subscribe(value);
+  }
+}
+
+// internal/util.js
+console.log(WorldStorage);
+export {
+  PlayerProxy,
+  WorldStorage,
+  registerEvents
+};

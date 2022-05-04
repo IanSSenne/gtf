@@ -44,7 +44,7 @@ if (!process.argv.includes("dev"))
           outfile: "util.js",
           format: "esm",
           platform: "node",
-          minify: true,
+          minify: false,
           allowOverwrite: true,
         })
         .then(() => {

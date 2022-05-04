@@ -40,7 +40,7 @@ async function buildDependency(
     .build({
       entryPoints: [resolvedPath],
       bundle: true,
-      minify,
+      minify: false,
       format: "esm",
       sourcemap: "external",
       outfile: resolve(process.cwd(), "scripts", "modules", meta.path + ".js"),
