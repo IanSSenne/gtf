@@ -1,5 +1,7 @@
-// internal/util/DataStorage.js
+// util.js
 import { BlockLocation, ItemStack, MinecraftBlockTypes, MinecraftItemTypes, world } from "mojang-minecraft";
+import { BlockRaycastOptions, EntityRaycastOptions } from "mojang-minecraft";
+import { world as world2 } from "mojang-minecraft";
 var RNG = new class SeededRNG {
   constructor() {
     this.seed = GTF.env.GTF_PROJECT_ID;
@@ -106,19 +108,12 @@ var WorldStorage = new class {
     return result;
   }
 }();
-
-// internal/util/PlayerProxy.js
-import { BlockRaycastOptions, EntityRaycastOptions } from "mojang-minecraft";
-
-// internal/util/EntityDataStore.js
 var EntityDataStore = class {
   constructor(entity) {
     this.entity = entity;
     this.raw = this.entity.getDynamicProperty("_");
   }
 };
-
-// internal/util/PlayerProxy.js
 var FeatureFlags;
 (function(FeatureFlags2) {
   FeatureFlags2[FeatureFlags2["NONE"] = 0] = "NONE";
@@ -289,16 +284,11 @@ var PlayerProxy = class {
     this._.triggerEvent(eventName);
   }
 };
-
-// internal/util/registerEvents.js
-import { world as world2 } from "mojang-minecraft";
 function registerEvents(events) {
   for (const [key, value] of Object.entries(events)) {
     world2.events[key].subscribe(value);
   }
 }
-
-// internal/util.js
 console.log(WorldStorage);
 export {
   PlayerProxy,
