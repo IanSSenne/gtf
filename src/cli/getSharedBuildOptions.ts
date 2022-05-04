@@ -10,6 +10,10 @@ const patchedModules = [
   "mojang-gametest",
 ];
 const builtDependencies = new Map();
+const GTF_BUILD_OPTIONS_PATH = resolve(process.cwd(), "gtf.config.json");
+export const gtfBuildOpts = existsSync(GTF_BUILD_OPTIONS_PATH)
+  ? require(GTF_BUILD_OPTIONS_PATH)?.build || {}
+  : {};
 async function buildDependency(
   meta: esbuild.OnResolveArgs,
   minify: boolean
@@ -39,10 +43,10 @@ async function buildDependency(
   await esbuild
     .build({
       entryPoints: [resolvedPath],
-      bundle: true,
-      minify: false,
+      bundle: gtfBuildOpts.bundle ?? true,
+      minify: gtfBuildOpts.minify ?? false,
       format: "esm",
-      sourcemap: "external",
+      sourcemap: gtfBuildOpts.sourceMap || "linked",
       outfile: resolve(process.cwd(), "scripts", "modules", meta.path + ".js"),
       external: ["mojang-minecraft", "mojang-gametest", "mojang-minecraft-ui"],
       plugins: [seperateDependencyPlugin(minify)],

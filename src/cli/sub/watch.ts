@@ -4,7 +4,7 @@ import { CommandOptions } from "../CommandOptions";
 import chokidar from "chokidar";
 import esbuild from "esbuild";
 import chalk from "chalk";
-import { getSharedBuildOptions } from "../getSharedBuildOptions";
+import { getSharedBuildOptions, gtfBuildOpts } from "../getSharedBuildOptions";
 export default async function execute(opts: CommandOptions["watch"]) {
   const project_directory = path.resolve(process.cwd(), "src");
   const watcher = chokidar.watch(project_directory);
@@ -21,10 +21,10 @@ export default async function execute(opts: CommandOptions["watch"]) {
       .build({
         entryPoints: [entrypoint],
         outfile: path.resolve(process.cwd(), "scripts", "pack.js"),
-        bundle: true,
-        minify: false,
+        bundle: gtfBuildOpts.bundle ?? true,
+        minify: gtfBuildOpts.minify ?? false,
         format: "esm",
-        sourcemap: "external",
+        sourcemap: gtfBuildOpts.sourceMap || "linked",
         external: [
           "mojang-minecraft",
           "mojang-gametest",
