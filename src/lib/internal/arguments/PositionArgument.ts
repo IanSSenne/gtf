@@ -1,5 +1,8 @@
-// @ts-ignore
-import { ArgumentMatcher, ArgumentResult, CommandContext } from "../command";
+import {
+  ArgumentMatcher,
+  ArgumentResult,
+  CommandContext,
+} from "../ArgumentMatcher";
 import { Vector, Location, Player } from "mojang-minecraft";
 const regExp =
   /^([~^]-?\d*(?:\.\d*)?|-?\d+(?:\.\d*)?) ([~^]-?\d*(?:\.\d*)?|-?\d+(?:\.\d*)?) ([~^]-?\d*(?:\.\d*)?|-?\d+(?:\.\d*)?)/;

@@ -1,194 +1,321 @@
-// command.js
-import { BlockLocation as U, world as b } from "mojang-minecraft";
-import { Vector as v, Location as I } from "mojang-minecraft";
-var O = /^([~^]-?\d*(?:\.\d*)?|-?\d+(?:\.\d*)?) ([~^]-?\d*(?:\.\d*)?|-?\d+(?:\.\d*)?) ([~^]-?\d*(?:\.\d*)?|-?\d+(?:\.\d*)?)/;
-function y(t) {
-  let e = t.startsWith("^") ? "local" : t.startsWith("~") ? "relative" : "absolute", s = t.substring(e === "absolute" ? 0 : 1);
-  return { type: e, value: parseFloat(s || "0") };
+// internal/command.js
+import { BlockLocation, world } from "mojang-minecraft";
+
+// internal/ArgumentMatcher.js
+var ArgumentMatcher = class {
+  matches(_value, _context) {
+    return {
+      success: false,
+      error: "NOT IMPLEMENTED"
+    };
+  }
+  setName(name) {
+    this.name = name;
+    return this;
+  }
+};
+
+// internal/arguments/PositionArgument.js
+import { Vector, Location } from "mojang-minecraft";
+var regExp = /^([~^]-?\d*(?:\.\d*)?|-?\d+(?:\.\d*)?) ([~^]-?\d*(?:\.\d*)?|-?\d+(?:\.\d*)?) ([~^]-?\d*(?:\.\d*)?|-?\d+(?:\.\d*)?)/;
+function getAxis(value) {
+  let type = value.startsWith("^") ? "local" : value.startsWith("~") ? "relative" : "absolute";
+  let numericValue = value.substring(type === "absolute" ? 0 : 1);
+  return {
+    type,
+    value: parseFloat(numericValue || "0")
+  };
 }
-function V(t) {
-  for (; t < 0; )
-    t += Math.PI * 2;
-  for (; t > Math.PI * 2; )
-    t -= Math.PI * 2;
-  return t;
+function normalizeRotation(rot) {
+  while (rot < 0)
+    rot += Math.PI * 2;
+  while (rot > Math.PI * 2)
+    rot -= Math.PI * 2;
+  return rot;
 }
-function H(t, e) {
-  return new v(t.y * e.z - t.z * e.y, t.z * e.x - t.x * e.z, t.x * e.y - t.y * e.x);
+function cross(a, b) {
+  return new Vector(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x);
 }
-var p = Math.PI / 2;
-function F(t, e, s, r) {
-  let n = r.viewVector, o = Math.atan2(Math.sqrt(n.x * n.x + n.z * n.z), n.y) - p, u = Math.atan2(n.z, n.x);
-  u = V(u - p);
-  let i = Math.cos(u + p), c = Math.sin(u + p), l = Math.cos(-o + p), f = Math.sin(-o + p), L = Math.cos(-o), W = Math.sin(-o), m = new v(i * L, W, c * L), x = new v(i * l, f, c * l), d = H(m, x);
-  d.x *= -1, d.y *= -1, d.z *= -1;
-  let $ = m.x * s + x.x * t + d.x * e, k = m.y * s + x.y * t + d.y * e, C = m.z * s + x.z * t + d.z * e;
-  return new I(r.location.x + $, r.location.y + k, r.location.z + C);
+var NINETY_DEGREES = Math.PI / 2;
+function computeLocalOffset(x, y, z, player) {
+  const vv = player.viewVector;
+  let rotX = Math.atan2(Math.sqrt(vv.x * vv.x + vv.z * vv.z), vv.y) - NINETY_DEGREES;
+  let rotY = Math.atan2(vv.z, vv.x);
+  rotY = normalizeRotation(rotY - NINETY_DEGREES);
+  const up_cos = Math.cos(rotY + NINETY_DEGREES);
+  const up_sin = Math.sin(rotY + NINETY_DEGREES);
+  const left_cos = Math.cos(-rotX + NINETY_DEGREES);
+  const left_sin = Math.sin(-rotX + NINETY_DEGREES);
+  const forwords_cos = Math.cos(-rotX);
+  const forwords_sin = Math.sin(-rotX);
+  const vec3a = new Vector(up_cos * forwords_cos, forwords_sin, up_sin * forwords_cos);
+  const vec3b = new Vector(up_cos * left_cos, left_sin, up_sin * left_cos);
+  const vec3c = cross(vec3a, vec3b);
+  vec3c.x *= -1;
+  vec3c.y *= -1;
+  vec3c.z *= -1;
+  const x_offset = vec3a.x * z + vec3b.x * x + vec3c.x * y;
+  const y_offset = vec3a.y * z + vec3b.y * x + vec3c.y * y;
+  const z_offset = vec3a.z * z + vec3b.z * x + vec3c.z * y;
+  return new Location(player.location.x + x_offset, player.location.y + y_offset, player.location.z + z_offset);
 }
-var w = class extends h {
-  matches(e, s) {
-    let r = e.match(O);
-    if (!r)
-      return { success: false, error: "Expected a Position." };
-    let [n, o, u, i] = r, c = y(u), l = y(o), f = y(i);
-    return c.type === "local" && l.type === "local" && f.type === "local" ? { success: true, value: F(c.value, l.value, f.value, s.sender), raw: n } : c.type === "local" || l.type === "local" || f.type === "local" ? { success: false, error: "Local axis must be used together, they cannot be mixed with local and absolute cordinates." } : { success: true, value: new I(+(c.type === "relative") * s.sender.location.x + c.value, +(l.type === "relative") * s.sender.location.y + l.value, +(f.type === "relative") * s.sender.location.z + f.value), raw: n };
-  }
-};
-var h = class {
-  matches(e, s) {
-    return { success: false, error: "NOT IMPLEMENTED" };
-  }
-  setName(e) {
-    return this.name = e, this;
-  }
-};
-var _ = class {
-  matches(e) {
-    return { success: true, value: "", raw: "", push: false };
-  }
-  setName(e) {
-    return this.name = e, this;
-  }
-};
-var E = class extends h {
-  constructor(e) {
-    super(), this.literal = e;
-  }
-  matches(e) {
-    return e === this.literal || e.startsWith(this.literal + " ") ? { success: true, value: null, raw: this.literal, push: false } : { success: false, error: `Expected '${this.literal}'` };
-  }
-};
-var N = class extends h {
-  constructor() {
-    super();
-  }
-  matches(e) {
-    return { success: true, value: e, raw: e, push: true };
-  }
-};
-var z = class extends h {
-  constructor() {
-    super();
-  }
-  matches(e) {
-    try {
-      let s = e.match(/^(-*(?:\d+(?:\.\d+)*|(?:\.\d+)))/);
-      if (s) {
-        let r = parseFloat(s[0]);
-        return Number.isNaN(r) && Array.isArray(s) ? { success: false, error: `Expected a number for '${this.name}'` } : { success: true, value: r, raw: s[0], push: true };
+var PositionArgumentMatcher = class extends ArgumentMatcher {
+  matches(_value, context) {
+    const matches = _value.match(regExp);
+    if (!matches) {
+      return {
+        success: false,
+        error: "Expected a Position."
+      };
+    }
+    let [raw, x, y, z] = matches;
+    const _x = getAxis(y);
+    const _y = getAxis(x);
+    const _z = getAxis(z);
+    if (_x.type === "local" && _y.type === "local" && _z.type === "local") {
+      return {
+        success: true,
+        value: computeLocalOffset(_x.value, _y.value, _z.value, context.sender),
+        raw
+      };
+    } else {
+      if (_x.type === "local" || _y.type === "local" || _z.type === "local") {
+        return {
+          success: false,
+          error: "Local axis must be used together, they cannot be mixed with local and absolute cordinates."
+        };
       }
-      return { success: false, error: `Expected a number for '${this.name}'` };
-    } catch {
-      return { success: false, error: `Expected a number for '${this.name}'` };
+      return {
+        success: true,
+        value: new Location(+(_x.type === "relative") * context.sender.location.x + _x.value, +(_y.type === "relative") * context.sender.location.y + _y.value, +(_z.type === "relative") * context.sender.location.z + _z.value),
+        raw
+      };
     }
   }
 };
-var M = class extends h {
+
+// internal/command.js
+var RootArgumentMatcher = class {
+  matches(_value) {
+    return {
+      success: true,
+      value: "",
+      raw: "",
+      push: false
+    };
+  }
+  setName(name) {
+    this.name = name;
+    return this;
+  }
+};
+var LiteralArgumentMatcher = class extends ArgumentMatcher {
+  constructor(literal2) {
+    super();
+    this.literal = literal2;
+  }
+  matches(value) {
+    return value === this.literal || value.startsWith(this.literal + " ") ? {
+      success: true,
+      value: null,
+      raw: this.literal,
+      push: false
+    } : {
+      success: false,
+      error: `Expected '${this.literal}'`
+    };
+  }
+};
+var StringArgumentMatcher = class extends ArgumentMatcher {
+  constructor() {
+    super();
+  }
+  matches(value) {
+    return {
+      success: true,
+      value,
+      raw: value,
+      push: true
+    };
+  }
+};
+var NumberArgumentMatcher = class extends ArgumentMatcher {
+  constructor() {
+    super();
+  }
+  matches(value) {
+    try {
+      const match = value.match(/^(-*(?:\d+(?:\.\d+)*|(?:\.\d+)))/);
+      if (match) {
+        const value2 = parseFloat(match[0]);
+        if (Number.isNaN(value2) && Array.isArray(match)) {
+          return {
+            success: false,
+            error: `Expected a number for '${this.name}'`
+          };
+        } else {
+          return {
+            success: true,
+            value: value2,
+            raw: match[0],
+            push: true
+          };
+        }
+      }
+      return {
+        success: false,
+        error: `Expected a number for '${this.name}'`
+      };
+    } catch (e) {
+      return {
+        success: false,
+        error: `Expected a number for '${this.name}'`
+      };
+    }
+  }
+};
+var SelectorArgumentMatcher = class extends ArgumentMatcher {
   constructor() {
     super();
   }
 };
-var a = class {
-  constructor(e = new _()) {
-    this.matcher = e, this.depth = 0, this.actions = [];
+var ArgumentBuilder = class {
+  constructor(matcher = new RootArgumentMatcher()) {
+    this.matcher = matcher;
+    this.depth = 0;
+    this.actions = [];
   }
-  bind(e) {
-    return this.actions.push(e), e.setDepth(this.depth + 1, this), e;
+  bind(ab) {
+    this.actions.push(ab);
+    ab.setDepth(this.depth + 1, this);
+    return ab;
   }
-  setDepth(e, s = this) {
-    this.parent = s, this.depth = e, this.actions.forEach((r) => r.setDepth(e + 1));
+  setDepth(depth, parent = this) {
+    this.parent = parent;
+    this.depth = depth;
+    this.actions.forEach((a) => a.setDepth(depth + 1));
   }
   get root() {
     return this?.parent?.root || this;
   }
-  __add(e) {
-    this.actions.push(e), e.setDepth(this.depth + 1);
+  __add(target) {
+    this.actions.push(target);
+    target.setDepth(this.depth + 1);
   }
-  __redirect(e) {
-    this.actions.push(...e.actions);
+  __redirect(target) {
+    this.actions.push(...target.actions);
   }
-  literal(e) {
-    return this.bind(new a(new E(e).setName(e)));
+  literal(value) {
+    return this.bind(new ArgumentBuilder(new LiteralArgumentMatcher(value).setName(value)));
   }
-  number(e) {
-    return this.bind(new a(new z().setName(e)));
+  number(name) {
+    return this.bind(new ArgumentBuilder(new NumberArgumentMatcher().setName(name)));
   }
-  string(e) {
-    return this.bind(new a(new N().setName(e)));
+  string(name) {
+    return this.bind(new ArgumentBuilder(new StringArgumentMatcher().setName(name)));
   }
-  position(e) {
-    return this.bind(new a(new w().setName(e)));
+  position(name) {
+    return this.bind(new ArgumentBuilder(new PositionArgumentMatcher().setName(name)));
   }
-  selector(e) {
-    return this.bind(new a(new M().setName(e)));
+  selector(name) {
+    return this.bind(new ArgumentBuilder(new SelectorArgumentMatcher().setName(name)));
   }
-  argument(e, s) {
-    return this.bind(new a(s.setName(e)));
+  argument(name, matcher) {
+    return this.bind(new ArgumentBuilder(matcher.setName(name)));
   }
-  executes(e) {
-    return this.bind(new a()).executable = e, this;
+  executes(callback) {
+    this.bind(new ArgumentBuilder()).executable = callback;
+    return this;
   }
-  evaluate(e, s, r = []) {
-    if (s.length === 0)
+  evaluate(ctx, command, args = []) {
+    if (command.length === 0) {
       if (this.executable) {
         try {
-          this.executable(e, ...r);
-        } catch (o) {
-          return { success: true, executionSuccess: false, executionError: o };
+          this.executable(ctx, ...args);
+        } catch (e) {
+          return {
+            success: true,
+            executionSuccess: false,
+            executionError: e
+          };
         }
         return { success: true, executionSuccess: true };
-      } else
-        return { success: false, error: "Unexpected end of command" };
-    let n = this.matcher.matches(s.trim(), e);
-    if (n.success === true) {
-      let o = [];
-      for (let i of this.actions) {
-        let c = i.evaluate(e, s.trim().substring(n.raw.length), n.push === false ? [...r] : [...r, n.value]);
-        if (c.success)
-          return c;
-        o.push(c);
+      } else {
+        return {
+          success: false,
+          error: "Unexpected end of command"
+        };
       }
-      let u = Math.max(...o.map((i) => i.depth || -1 / 0));
-      return o.find((i) => i.depth === u) || { success: false, error: "No results found" };
-    } else
-      return { success: false, error: n.error, depth: this.depth };
+    }
+    let result = this.matcher.matches(command.trim(), ctx);
+    if (result.success === true) {
+      let results = [];
+      for (const action of this.actions) {
+        const result2 = action.evaluate(ctx, command.trim().substring(result.raw.length), result.push === false ? [...args] : [...args, result.value]);
+        if (result2.success)
+          return result2;
+        results.push(result2);
+      }
+      const min = Math.max(...results.map((r) => r.depth || -Infinity));
+      return results.find((r) => r.depth === min) || {
+        success: false,
+        error: "No results found"
+      };
+    } else {
+      return {
+        success: false,
+        error: result.error,
+        depth: this.depth
+      };
+    }
   }
 };
-var D = new a();
-var P = /* @__PURE__ */ new Map();
-function J(t, e, s = []) {
-  s.forEach((r) => {
-    P.set(r, e), D.literal(r).__redirect(t);
-  }), D.__add(t), P.set(t.matcher.name, e);
+var commandRoot = new ArgumentBuilder();
+var helpMessages = /* @__PURE__ */ new Map();
+function registerCommand(command, help, alias = []) {
+  alias.forEach((a) => {
+    helpMessages.set(a, help);
+    commandRoot.literal(a).__redirect(command);
+  });
+  commandRoot.__add(command);
+  helpMessages.set(command.matcher.name, help);
 }
-function K(t) {
-  return new a(new E(t));
+function literal(value) {
+  return new ArgumentBuilder(new LiteralArgumentMatcher(value));
 }
-var T = b.getDimension("overworld");
-var g = b.getDimension("nether");
-var R = b.getDimension("the end");
-function Y(t) {
-  let e = new U(Math.floor(t.location.x), Math.floor(t.location.y), Math.floor(t.location.z));
-  if (T.getEntitiesAtBlockLocation(e).includes(t))
-    return T;
-  if (g.getEntitiesAtBlockLocation(e).includes(t))
-    return g;
-  if (R.getEntitiesAtBlockLocation(e).includes(t))
-    return R;
+var OVERWORLD = world.getDimension("overworld");
+var THE_NETHER = world.getDimension("nether");
+var THE_END = world.getDimension("the end");
+function getDimension(player) {
+  const bl = new BlockLocation(Math.floor(player.location.x), Math.floor(player.location.y), Math.floor(player.location.z));
+  if (OVERWORLD.getEntitiesAtBlockLocation(bl).includes(player))
+    return OVERWORLD;
+  if (THE_NETHER.getEntitiesAtBlockLocation(bl).includes(player))
+    return THE_NETHER;
+  if (THE_END.getEntitiesAtBlockLocation(bl).includes(player))
+    return THE_END;
   throw new Error("Unable to locate player dimension");
 }
-b.events.beforeChat.subscribe((t) => {
-  if (t.message.startsWith("-")) {
-    let e = t.message.substring(1), s = D.evaluate({ event: t, sender: t.sender, dimension: Y(t.sender) }, e);
-    t.cancel = true, s.success === false && (t.sender.runCommand(`tellraw @s {"rawtext":[{"text":"\xA74Command Error: ${s.error}"}]}`), console.warn(s.error));
+world.events.beforeChat.subscribe((event) => {
+  if (event.message.startsWith("-")) {
+    const command = event.message.substring(1);
+    const result = commandRoot.evaluate({
+      event,
+      sender: event.sender,
+      dimension: getDimension(event.sender)
+    }, command);
+    event.cancel = true;
+    if (result.success === false) {
+      event.sender.runCommand(`tellraw @s {"rawtext":[{"text":"\xA74Command Error: ${result.error}"}]}`);
+      console.warn(result.error);
+    }
   }
 });
 export {
-  h as ArgumentMatcher,
-  z as NumberArgumentMatcher,
-  N as StringArgumentMatcher,
-  D as commandRoot,
-  P as helpMessages,
-  K as literal,
-  J as registerCommand
+  NumberArgumentMatcher,
+  StringArgumentMatcher,
+  commandRoot,
+  helpMessages,
+  literal,
+  registerCommand
 };

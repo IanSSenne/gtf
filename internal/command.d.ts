@@ -1,16 +1,6 @@
-import { ChatEvent, Dimension, Player } from "mojang-minecraft";
+import { ArgumentMatcher, ArgumentResult, CommandContext } from "./ArgumentMatcher";
 declare type discard = never;
 declare type AppendArgument<Base, Next> = Base extends (ctx: infer X, ...args: infer E) => infer R ? (ctx: X, ...args: [...E, Next]) => R : never;
-export declare type ArgumentResult<T> = {
-    success: true;
-    value: T;
-    raw: string;
-    push?: boolean;
-} | {
-    success: false;
-    error: string;
-    depth?: number;
-};
 declare type GuessTypeBasedOnArgumentResultType<T extends ArgumentResult<any>> = T extends {
     value: infer U;
 } ? U extends {
@@ -25,26 +15,6 @@ export declare type CommandResult = {
     error: string;
     depth?: number;
 };
-/**
- * @class ArgumentMatcher
- * @description Template class for checking if a string matches a certain pattern.
- */
-export declare class ArgumentMatcher {
-    name: string;
-    /**
-     *
-     * @param _value the value to match against
-     * @returns
-     */
-    matches(_value: string, _context: CommandContext): ArgumentResult<any>;
-    /**
-     * DO NOT USE, INTERNAL METHOD
-     * @param name
-     * @returns
-     * @private
-     */
-    setName(name: string): this;
-}
 export declare class StringArgumentMatcher extends ArgumentMatcher {
     constructor();
     matches(value: string): ArgumentResult<string>;
@@ -170,9 +140,4 @@ export declare const commandRoot: ArgumentBuilder<(ctx: CommandContext) => void>
 export declare const helpMessages: Map<string, string>;
 export declare function registerCommand(command: ArgumentBuilder, help: string, alias?: string[]): void;
 export declare function literal(value: string): ArgumentBuilder;
-export interface CommandContext {
-    event: ChatEvent;
-    sender: Player;
-    dimension: Dimension;
-}
 export {};

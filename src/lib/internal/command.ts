@@ -5,6 +5,11 @@ import {
   Player,
   world,
 } from "mojang-minecraft";
+import {
+  ArgumentMatcher,
+  ArgumentResult,
+  CommandContext,
+} from "./ArgumentMatcher";
 import { PositionArgumentMatcher } from "./arguments/PositionArgument";
 type discard = never;
 type AppendArgument<Base, Next> = Base extends (
@@ -13,18 +18,6 @@ type AppendArgument<Base, Next> = Base extends (
 ) => infer R
   ? (ctx: X, ...args: [...E, Next]) => R
   : never;
-export type ArgumentResult<T> =
-  | {
-      success: true;
-      value: T;
-      raw: string;
-      push?: boolean;
-    }
-  | {
-      success: false;
-      error: string;
-      depth?: number;
-    };
 type GuessTypeBasedOnArgumentResultType<T extends ArgumentResult<any>> =
   T extends { value: infer U }
     ? U extends { success: false }
@@ -42,34 +35,6 @@ export type CommandResult =
       error: string;
       depth?: number;
     };
-/**
- * @class ArgumentMatcher
- * @description Template class for checking if a string matches a certain pattern.
- */
-export class ArgumentMatcher {
-  name!: string;
-  /**
-   *
-   * @param _value the value to match against
-   * @returns
-   */
-  matches(_value: string, _context: CommandContext): ArgumentResult<any> {
-    return {
-      success: false,
-      error: "NOT IMPLEMENTED",
-    };
-  }
-  /**
-   * DO NOT USE, INTERNAL METHOD
-   * @param name
-   * @returns
-   * @private
-   */
-  setName(name: string): this {
-    this.name = name;
-    return this;
-  }
-}
 class RootArgumentMatcher {
   name!: string;
   matches(_value: string): ArgumentResult<any> {
@@ -265,6 +230,8 @@ class ArgumentBuilder<
   position(name: string): ArgumentBuilder<AppendArgument<HandlerFn, Location>> {
     return this.bind(
       new ArgumentBuilder<AppendArgument<HandlerFn, Location>>(
+        // the compiler is catching this but not the language server :/
+        // @ts-ignore
         new PositionArgumentMatcher().setName(name)
       )
     );
@@ -411,11 +378,7 @@ export function registerCommand(
 export function literal(value: string): ArgumentBuilder {
   return new ArgumentBuilder(new LiteralArgumentMatcher(value));
 }
-export interface CommandContext {
-  event: ChatEvent;
-  sender: Player;
-  dimension: Dimension;
-}
+
 const OVERWORLD = world.getDimension("overworld");
 const THE_NETHER = world.getDimension("nether");
 const THE_END = world.getDimension("the end");
