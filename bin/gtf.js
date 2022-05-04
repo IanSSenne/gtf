@@ -38750,10 +38750,10 @@ async function execute2(opts) {
   import_esbuild2.default.build({
     entryPoints: [entrypoint],
     outfile: import_path4.default.resolve(process.cwd(), "scripts", "pack.js"),
-    bundle: true,
-    minify: true,
+    bundle: gtfBuildOpts.bundle ?? true,
+    minify: gtfBuildOpts.minify ?? true,
     format: "esm",
-    sourcemap: "external",
+    sourcemap: gtfBuildOpts.sourceMap || void 0,
     external: ["mojang-minecraft", "mojang-gametest", "mojang-minecraft-ui"],
     treeShaking: true,
     ...getSharedBuildOptions(true)
