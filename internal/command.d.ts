@@ -1,3 +1,4 @@
+import { Location } from "mojang-minecraft";
 import { ArgumentMatcher, ArgumentResult, CommandContext } from "./ArgumentMatcher";
 declare type discard = never;
 declare type AppendArgument<Base, Next> = Base extends (ctx: infer X, ...args: infer E) => infer R ? (ctx: X, ...args: [...E, Next]) => R : never;

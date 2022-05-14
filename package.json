@@ -14,7 +14,8 @@
   },
   "scripts": {
     "build:lib": "tsc && node build-lib",
-    "build:cli": "node build-tool"
+    "build:cli": "node build-tool",
+    "build": "yarn build:lib && yarn build:cli"
   },
   "license": "MIT",
   "dependencies": {

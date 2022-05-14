@@ -7,7 +7,7 @@ esbuild.build({
   outfile: "bin/gtf.js",
   format: "cjs",
   platform: "node",
-  watch: !process.argv.includes("dev"),
+  watch: process.argv.includes("dev"),
   banner: {
     js: "#!/usr/bin/env node",
   },

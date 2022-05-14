@@ -2,6 +2,7 @@ import {
   BlockLocation,
   ChatEvent,
   Dimension,
+  Location,
   Player,
   world,
 } from "mojang-minecraft";
