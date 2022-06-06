@@ -116,6 +116,19 @@ declare class ArgumentBuilder<HandlerFn extends Function = (ctx: CommandContext)
     /**
      * @example
      * ```
+     * ArgumentBuilderInstance.requires((ctx)=>ctx.sender.hasTag("admin"),"You must be an admin to execute this command.").executes((ctx:CommandContext)=>{
+     * 	console.warn(`success`);
+     * })
+     * ```
+     * tells the command parser that the particular path is only accessible if the context meets a criteria
+     * @param condition
+     * @param message
+     * @returns
+     **/
+    requires(fn: (ctx: CommandContext) => boolean, error: string): ArgumentBuilder<HandlerFn>;
+    /**
+     * @example
+     * ```
      * ArgumentBuilderInstance.literal("roll").number("count").executes((ctx:CommandContext,count:number)=>{
      * 	console.warn(`the count is ${count}`);
      * })

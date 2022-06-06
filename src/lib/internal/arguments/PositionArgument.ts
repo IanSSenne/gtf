@@ -35,6 +35,7 @@ function cross(a: Vector, b: Vector) {
   );
 }
 const NINETY_DEGREES = Math.PI / 2;
+// this function is based on the local coordinate implimentation from minecraft: java edition.
 function computeLocalOffset(
   x: number,
   y: number,

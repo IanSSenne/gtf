@@ -126,6 +126,22 @@ var LiteralArgumentMatcher = class extends ArgumentMatcher {
     };
   }
 };
+var RequiresArgumentMatcher = class extends ArgumentMatcher {
+  constructor(fn, erorrMessage) {
+    super();
+    this.fn = fn;
+    this.erorrMessage = erorrMessage;
+  }
+  matches(value, ctx) {
+    return {
+      success: this.fn(ctx),
+      value: null,
+      raw: "",
+      push: false,
+      error: this.erorrMessage
+    };
+  }
+};
 var StringArgumentMatcher = class extends ArgumentMatcher {
   constructor() {
     super();
@@ -222,6 +238,9 @@ var ArgumentBuilder = class {
   }
   argument(name, matcher) {
     return this.bind(new ArgumentBuilder(matcher.setName(name)));
+  }
+  requires(fn, error) {
+    return this.bind(new ArgumentBuilder(new RequiresArgumentMatcher(fn, error)));
   }
   executes(callback) {
     this.bind(new ArgumentBuilder()).executable = callback;

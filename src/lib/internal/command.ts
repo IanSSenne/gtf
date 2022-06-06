@@ -69,6 +69,23 @@ class LiteralArgumentMatcher extends ArgumentMatcher {
         };
   }
 }
+class RequiresArgumentMatcher extends ArgumentMatcher {
+  constructor(
+    public fn: (ctx: CommandContext) => boolean,
+    public erorrMessage: string
+  ) {
+    super();
+  }
+  matches(value: string, ctx: CommandContext): ArgumentResult<null> {
+    return {
+      success: this.fn(ctx),
+      value: null,
+      raw: "",
+      push: false,
+      error: this.erorrMessage,
+    };
+  }
+}
 export class StringArgumentMatcher extends ArgumentMatcher {
   constructor() {
     super();
@@ -283,6 +300,26 @@ class ArgumentBuilder<
           >
         >
       >(matcher.setName(name))
+    );
+  }
+  /**
+   * @example
+   * ```
+   * ArgumentBuilderInstance.requires((ctx)=>ctx.sender.hasTag("admin"),"You must be an admin to execute this command.").executes((ctx:CommandContext)=>{
+   * 	console.warn(`success`);
+   * })
+   * ```
+   * tells the command parser that the particular path is only accessible if the context meets a criteria
+   * @param condition
+   * @param message
+   * @returns
+   **/
+  requires(
+    fn: (ctx: CommandContext) => boolean,
+    error: string
+  ): ArgumentBuilder<HandlerFn> {
+    return this.bind(
+      new ArgumentBuilder<HandlerFn>(new RequiresArgumentMatcher(fn, error))
     );
   }
   /**
