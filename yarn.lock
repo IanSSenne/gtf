@@ -10,10 +10,10 @@
     escape-string-regexp "^4.0.0"
     rollup-plugin-node-polyfills "^0.2.1"
 
-"@types/mojang-minecraft@^0.1.4":
-  version "0.1.5"
-  resolved "https://registry.yarnpkg.com/@types/mojang-minecraft/-/mojang-minecraft-0.1.5.tgz#d403a56bb8a3537827d3e80afab93778ce4fa56a"
-  integrity sha512-q6TcsBiRRSZ5B9zlszDDXVyCe9LIfDymiUw6eLTTvOQ+2Dx4ehLmZK1sv7mp1dkZYVieoms2jk7af3MjEjtCdQ==
+"@types/mojang-minecraft@^0.1.6":
+  version "0.1.6"
+  resolved "https://registry.yarnpkg.com/@types/mojang-minecraft/-/mojang-minecraft-0.1.6.tgz#b3fed8991ad41bed0dc774760ea211e2cdb2f0a3"
+  integrity sha512-Zho2/JYWmowvOYGVcnV08DRASYm66oeENR4yvXTLpMXWJm/j12rbuk5ddXQoE+GIu+vsbsQzzJFHeZ3HxI1TLw==
 
 "@types/node@*", "@types/node@^17.0.23":
   version "17.0.24"

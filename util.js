@@ -18,6 +18,15 @@ var FeatureFlags;
 var PlayerProxy = class {
   constructor(player) {
     this._ = player;
+    this.rotation = player.rotation;
+    this.scoreboard = player.scoreboard;
+  }
+  runCommandAsync(commandString) {
+    throw new Error("Method not implemented.");
+  }
+  setRotation(degreesX, degreesY) {
+    this.rotation.x = degreesX;
+    this.rotation.y = degreesY;
   }
   cache(key, value) {
     if (this.c.has(key))
@@ -30,7 +39,7 @@ var PlayerProxy = class {
     return this._;
   }
   get bodyRotation() {
-    return this._.bodyRotation;
+    return this._.rotation.x;
   }
   get dimension() {
     return this._.dimension;

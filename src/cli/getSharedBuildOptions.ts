@@ -7,7 +7,7 @@ import { existsSync, readFileSync, writeFileSync } from "fs";
 const patchedModules = [
   "mojang-minecraft",
   "mojang-minecraft-ui",
-  "mojang-gametest",
+  "mojang-gametest"
 ];
 const builtDependencies = new Map();
 const GTF_BUILD_OPTIONS_PATH = resolve(process.cwd(), "gtf.config.json");
@@ -21,17 +21,17 @@ async function buildDependency(
   if (patchedModules.includes(meta.path)) {
     return {
       path: meta.path,
-      external: true,
+      external: true
     };
   }
-  let resolvedPath = null;
+  let resolvedPath: string | null = null;
   const start = performance.now();
   try {
     resolvedPath = cp
       .execSync(
         `node --print "try{require('${meta.path}')}catch(e){};require.resolve('${meta.path}')"`,
         {
-          cwd: process.cwd(),
+          cwd: process.cwd()
         }
       )
       .toString("utf-8")
@@ -48,8 +48,17 @@ async function buildDependency(
       format: "esm",
       sourcemap: gtfBuildOpts.sourceMap || "linked",
       outfile: resolve(process.cwd(), "scripts", "modules", meta.path + ".js"),
-      external: ["mojang-minecraft", "mojang-gametest", "mojang-minecraft-ui"],
-      plugins: [seperateDependencyPlugin(minify)],
+      external: [
+        "mojang-minecraft",
+        "mojang-gametest",
+        "mojang-minecraft-ui",
+        "mojang-minecraft-server-admin",
+        "mojang-net"
+      ],
+      plugins: [
+        // This plugin can cause issues with inner dependency references
+        //seperateDependencyPlugin(minify)
+      ]
     })
     .then((result) => {
       console.log(
@@ -61,7 +70,7 @@ async function buildDependency(
     });
   return {
     path: "./modules/" + meta.path + ".js",
-    external: true,
+    external: true
   };
 }
 let _buildCache = {};
@@ -78,7 +87,7 @@ function seperateDependencyPlugin(production: boolean) {
     setup(build: esbuild.PluginBuild) {
       build.onResolve(
         {
-          filter: /^@*[a-z]/,
+          filter: /^@*[a-z]/
         },
         async (args: esbuild.OnResolveArgs) => {
           if (builtDependencies.has(args.path)) {
@@ -91,12 +100,15 @@ function seperateDependencyPlugin(production: boolean) {
       );
       build.onEnd(async () => {
         if (production) {
+          // @ts-expect-error
           const content = readFileSync(build.initialOptions.outfile, "utf8");
           const minified = await minify(content);
+
+          // @ts-expect-error
           writeFileSync(build.initialOptions.outfile, minified.code);
         }
       });
-    },
+    }
   };
 }
 const GTF_PROJECT_META_PATH = resolve(process.cwd(), "gtf-project.json");
@@ -105,7 +117,7 @@ if (!existsSync(GTF_PROJECT_META_PATH)) {
   writeFileSync(
     GTF_PROJECT_META_PATH,
     JSON.stringify({
-      id: Math.floor(Math.random() * Number.MAX_SAFE_INTEGER),
+      id: Math.floor(Math.random() * Number.MAX_SAFE_INTEGER)
     })
   );
 }
@@ -115,7 +127,7 @@ function getProjectId() {
 function getEnvObject(production: boolean) {
   return {
     NODE_ENV: production ? "production" : "development",
-    GTF_PROJECT_ID: getProjectId(),
+    GTF_PROJECT_ID: getProjectId()
   };
 }
 export function getSharedBuildOptions(
@@ -126,12 +138,12 @@ export function getSharedBuildOptions(
       ...Object.fromEntries(
         Object.entries(getEnvObject(production)).map(([k, v]) => [
           `GTF.env.${k}`,
-          JSON.stringify(v),
+          JSON.stringify(v)
         ])
-      ),
+      )
     },
     plugins: [
-      seperateDependencyPlugin(production),
+      //seperateDependencyPlugin(production)
       //   {
       //     name: "dedupe imports",
       //     setup(build) {
@@ -183,6 +195,6 @@ export function getSharedBuildOptions(
       //       });
       //     },
       //   },
-    ],
+    ]
   };
 }

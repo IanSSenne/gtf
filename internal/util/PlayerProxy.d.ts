@@ -1,4 +1,4 @@
-import { Block, BlockRaycastOptions, Dimension, Effect, EffectType, Entity, EntityInventoryComponent, EntityRaycastOptions, IEntityComponent, ItemStack, Location, Player, ScreenDisplay, SoundOptions, Vector } from "mojang-minecraft";
+import { Block, BlockRaycastOptions, CommandResult, Dimension, Effect, EffectType, Entity, EntityInventoryComponent, EntityRaycastOptions, IEntityComponent, ItemStack, Location, Player, ScoreboardIdentity, ScreenDisplay, SoundOptions, Vector, XYRotation } from "mojang-minecraft";
 import { EntityDataStore } from "./EntityDataStore";
 export declare enum FeatureFlags {
     NONE = 0,
@@ -7,9 +7,16 @@ export declare enum FeatureFlags {
 export declare class PlayerProxy implements Player {
     private _;
     private c;
+    rotation: XYRotation;
+    scoreboard: ScoreboardIdentity;
     protected constructor(player: Player);
+    runCommandAsync(commandString: string): Promise<CommandResult>;
+    setRotation(degreesX: number, degreesY: number): void;
     private cache;
     get targetPlayer(): Player;
+    /**
+     * @deprecated
+     */
     get bodyRotation(): number;
     get dimension(): Dimension;
     get headLocation(): Location;

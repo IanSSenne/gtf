@@ -1,6 +1,7 @@
 import {
   Block,
   BlockRaycastOptions,
+  CommandResult,
   Dimension,
   Effect,
   EffectType,
@@ -11,20 +12,33 @@ import {
   ItemStack,
   Location,
   Player,
+  ScoreboardIdentity,
   ScreenDisplay,
   SoundOptions,
   Vector,
+  XYRotation
 } from "mojang-minecraft";
 import { EntityDataStore } from "./EntityDataStore";
 export enum FeatureFlags {
   NONE = 0,
-  NAME,
+  NAME
 }
 export class PlayerProxy implements Player {
   private _: Player;
   private c: Map<string, any>;
+  rotation: XYRotation;
+  scoreboard: ScoreboardIdentity;
   protected constructor(player: Player) {
     this._ = player;
+    this.rotation = player.rotation;
+    this.scoreboard = player.scoreboard;
+  }
+  runCommandAsync(commandString: string): Promise<CommandResult> {
+    throw new Error("Method not implemented.");
+  }
+  setRotation(degreesX: number, degreesY: number): void {
+    this.rotation.x = degreesX;
+    this.rotation.y = degreesY;
   }
   private cache<T>(key: string, value: () => T): T {
     if (this.c.has(key)) return this.c.get(key);
@@ -35,8 +49,11 @@ export class PlayerProxy implements Player {
   get targetPlayer(): Player {
     return this._;
   }
+  /**
+   * @deprecated
+   */
   get bodyRotation(): number {
-    return this._.bodyRotation;
+    return this._.rotation.x;
   }
   get dimension(): Dimension {
     return this._.dimension;
