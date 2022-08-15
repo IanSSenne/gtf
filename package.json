@@ -1,14 +1,6 @@
 {
   "name": "gtf",
   "version": "0.0.2",
-  "files": [
-    "bin/gtf.js",
-    "internal",
-    "command.js",
-    "command.d.ts",
-    "util.js",
-    "util.d.ts"
-  ],
   "bin": {
     "gtf": "bin/gtf.js"
   },
