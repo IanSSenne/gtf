@@ -13989,7 +13989,8 @@ async function execute(opts) {
         modules: [
           {
             description: "Gametest Module",
-            type: "javascript",
+            type: "script",
+            language: "javascript",
             uuid: module_uuid,
             version: [0, 0, 1],
             entry: "scripts/pack.js"
